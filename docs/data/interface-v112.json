@@ -1,6 +1,11 @@
 {
   "version_code": 112,
   "apk_sha256": "05bd7f87f084debdb9ba2333683f0b41f97f074e2ad50e75188366febe3c3140",
+  "physical_confirmation": {
+    "own_app_background_follow": true,
+    "evidence": "User observed the physical strip changing with the app background",
+    "confirmed_on": "2026-10-28"
+  },
   "actual_window": {
     "main_window": true,
     "scroll_view": false,

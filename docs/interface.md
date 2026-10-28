@@ -24,4 +24,6 @@
 
 ## 验证
 
+v112已由用户现场确认：实体灯带会跟随App背景颜色变化。软件回读也验证了九区颜色变化及退出／重新进入时的来源切换。
+
 从项目根目录运行`python app/tools/check_main_ui.py --serial <ADB地址>`可只读检查当前主窗口、居中位置和各控件边界。结果及截图保存在电脑`.local/`。窗口布局、背景颜色变化、退出／重新进入时的来源切换结果见[data/interface-v112.json](data/interface-v112.json)。
