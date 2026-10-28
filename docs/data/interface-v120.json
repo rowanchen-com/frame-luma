@@ -1,0 +1,187 @@
+{
+  "version_code": 120,
+  "apk_sha256": "69dd3a9ad2bae62a7cddf378e2ea0e641bd1e5e2a74000ec571e6174ecc7a37b",
+  "actual_ui": {
+    "main_window": true,
+    "scroll_view": false,
+    "all_main_controls_present": true,
+    "window_px": [
+      1920,
+      1080
+    ],
+    "centered": true,
+    "dashboard_bounds": [
+      288,
+      241,
+      1632,
+      838
+    ],
+    "all_controls_inside_panel": true,
+    "controls_on_left": true,
+    "preview_on_right": true,
+    "information_in_footer": true,
+    "compact_panel": true,
+    "panel_relative_rectangles": {
+      "brand_title": [
+        39,
+        514,
+        212,
+        547
+      ],
+      "controller_name": [
+        266,
+        529,
+        675,
+        559
+      ],
+      "controller_model": [
+        266,
+        564,
+        675,
+        586
+      ],
+      "light_group_label": [
+        266,
+        497,
+        675,
+        519
+      ],
+      "display_group_label": [
+        738,
+        497,
+        1019,
+        519
+      ],
+      "sync_group_label": [
+        1084,
+        497,
+        1305,
+        519
+      ],
+      "display_info": [
+        738,
+        529,
+        1019,
+        559
+      ],
+      "source_status": [
+        738,
+        564,
+        1019,
+        586
+      ],
+      "sync_latency": [
+        1084,
+        529,
+        1305,
+        559
+      ],
+      "sweep_latency": [
+        1084,
+        564,
+        1305,
+        586
+      ],
+      "connection_status": [
+        39,
+        561,
+        212,
+        586
+      ],
+      "color_preview": [
+        702,
+        60,
+        1299,
+        418
+      ],
+      "light_toggle": [
+        36,
+        36,
+        633,
+        114
+      ],
+      "brightness_control": [
+        36,
+        122,
+        633,
+        200
+      ],
+      "speed_control": [
+        36,
+        209,
+        633,
+        287
+      ],
+      "direction_control": [
+        36,
+        296,
+        633,
+        374
+      ],
+      "calibration_control": [
+        36,
+        397,
+        323,
+        457
+      ],
+      "about_control": [
+        346,
+        397,
+        633,
+        457
+      ]
+    }
+  },
+  "slider": {
+    "0": 0,
+    "25": 25,
+    "50": 50,
+    "75": 75,
+    "100": 100,
+    "drag_to_50": 50,
+    "short_drag_to_50": 50,
+    "after_refresh": 50,
+    "zero_keeps_session_active": true,
+    "original_restored": 100
+  },
+  "slider_thumb": [
+    {
+      "percent": 0,
+      "width": 27.0,
+      "height": 27.0,
+      "round": true,
+      "left_margin": 8.0,
+      "right_margin": 251.0
+    },
+    {
+      "percent": 50,
+      "width": 27.0,
+      "height": 27.0,
+      "round": true,
+      "left_margin": 129.0,
+      "right_margin": 130.0
+    },
+    {
+      "percent": 100,
+      "width": 27.0,
+      "height": 27.0,
+      "round": true,
+      "left_margin": 250.0,
+      "right_margin": 9.0
+    }
+  ],
+  "background": {
+    "orbit_seconds": 18,
+    "hue_cycle_seconds": 15,
+    "frame_interval_ms": 66,
+    "motion_visible_within_two_seconds_test_passed": true
+  },
+  "zero_brightness": "all-black complete strip frame; frozen host/wire brightness remains within validated nonzero range",
+  "offline_tests": {
+    "unique": 36,
+    "variant_executions": 60,
+    "failures": 0,
+    "errors": 0
+  },
+  "scope": "Actual 1080p slider, pointer motion and screenshot checks; no display mode changes or optical end-to-end latency claim. QHD/UHD proportional layout geometry is covered offline."
+}

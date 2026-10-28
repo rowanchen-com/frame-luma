@@ -12,7 +12,7 @@ val signingAlias = policy["key_alias"].toString()
 android {
     namespace = "com.xiaomi.mitv.light"
     compileSdk = 34
-    defaultConfig { applicationId = "com.xiaomi.mitv.light"; minSdk = 21; targetSdk = 34; versionCode = 118; versionName = "0.1.0-alpha.11" }
+    defaultConfig { applicationId = "com.xiaomi.mitv.light"; minSdk = 21; targetSdk = 34; versionCode = 120; versionName = "0.1.0-alpha.13" }
     signingConfigs {
         create("pinned") {
             if(keyPath != null)storeFile=rootProject.file(keyPath)

@@ -22,10 +22,10 @@ class TileSurface : Drawable() {
         val u = bounds.height() / 56f
         val focused = state.contains(android.R.attr.state_focused)
         rect.set(bounds.left + u, bounds.top + u, bounds.right - u, bounds.bottom - u)
-        paint.style = Paint.Style.FILL; paint.color = if (focused) 0xff1675e6.toInt() else Color.TRANSPARENT
+        paint.style = Paint.Style.FILL; paint.color = if (focused) 0x14ffffff else Color.TRANSPARENT
         canvas.drawRoundRect(rect, 8 * u, 8 * u, paint)
         paint.style = Paint.Style.STROKE; paint.strokeWidth = if (focused) 1.6f * u else u
-        paint.color = if (focused) 0x55ffffff else Color.TRANSPARENT
+        paint.color = if (focused) 0x99dee8f7.toInt() else Color.TRANSPARENT
         canvas.drawRoundRect(rect, 8 * u, 8 * u, paint)
     }
     override fun setAlpha(alpha: Int) { }

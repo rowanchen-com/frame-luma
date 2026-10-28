@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 /** Stable host ABI. One capture/output owner, bounded status, no per-frame disk writes. */
 public final class LiveEngine {
-    private static final String REVISION = "frame-luma-6";
+    private static final String REVISION = "frame-luma-7";
     private static final Uri STATE = Uri.parse("content://com.xiaomi.mitv.light.tcl.state/state");
     private final Context host;
     private volatile Thread worker;
@@ -40,8 +40,8 @@ public final class LiveEngine {
             layout = new LayoutOptions(json.getJSONObject("layout"));
             layoutKey = layout.json().toString();
             period = FramePacer.normalizeLegacyPeriod(json.getInt("period_ms"));
-            brightness = json.getInt("brightness_percent");
-            if (brightness < 1 || brightness > 100) throw new Exception("Brightness out of range");
+            brightness = json.optInt("user_brightness_percent",json.getInt("brightness_percent"));
+            if (brightness < 0 || brightness > 100) throw new Exception("Brightness out of range");
             locatorUnit = json.optInt("locator_unit", 0);
             locatorZone = json.optInt("locator_zone", -1);
             until = json.optLong("locator_until_elapsed", 0);

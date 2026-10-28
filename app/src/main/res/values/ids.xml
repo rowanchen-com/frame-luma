@@ -12,6 +12,11 @@
     <item name="sync_latency" type="id" />
     <item name="sweep_latency" type="id" />
     <item name="brightness_control" type="id" />
+    <item name="brightness_seek" type="id" />
+    <item name="brightness_value" type="id" />
+    <item name="light_group_label" type="id" />
+    <item name="display_group_label" type="id" />
+    <item name="sync_group_label" type="id" />
     <item name="speed_control" type="id" />
     <item name="direction_control" type="id" />
     <item name="calibration_control" type="id" />

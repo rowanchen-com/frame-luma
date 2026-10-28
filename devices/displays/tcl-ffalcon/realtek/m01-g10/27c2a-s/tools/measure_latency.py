@@ -14,7 +14,7 @@ parser.add_argument('--serial', required=True)
 parser.add_argument('--adb', default='adb')
 parser.add_argument('--seconds', type=int, default=8, choices=range(3, 31))
 parser.add_argument('--output', type=Path, default=Path('.local/latency.json'))
-parser.add_argument('--revision', default='frame-luma-6')
+parser.add_argument('--revision', default='frame-luma-7')
 parser.add_argument('--source', choices=['device','own_app'],default='device')
 args = parser.parse_args()
 base = [args.adb, '-s', args.serial]

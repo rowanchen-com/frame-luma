@@ -5,6 +5,7 @@ public interface LightOutput extends AutoCloseable {
     void begin() throws Exception;
     int unitCount();
     default LightIdentity identity() { return null; }
+    /** Logical brightness 0..100; zero emits darkness without changing ownership or power state. */
     void send(int[] rgb, int sequence, int brightnessPercent) throws Exception;
     void end();
     @Override void close();

@@ -26,7 +26,7 @@ args.output.mkdir(parents=True,exist_ok=True)
 (args.output/'hierarchy.txt').write_text(hierarchy,encoding='utf-8')
 (args.output/'screen.png').write_bytes(run('exec-out','screencap','-p'))
 assert 'android.widget.ScrollView{' not in hierarchy,'Main screen still scrolls/clips on the actual logical window'
-for name in ['dashboard_panel','brand_title','controller_name','controller_model','color_preview','sync_latency','sweep_latency','connection_status','light_toggle','light_switch','brightness_control','speed_control','direction_control','calibration_control','about_control']:
+for name in ['dashboard_panel','brand_title','controller_name','controller_model','light_group_label','display_group_label','sync_group_label','color_preview','sync_latency','sweep_latency','connection_status','light_toggle','light_switch','brightness_seek','brightness_value','brightness_control','speed_control','direction_control','calibration_control','about_control']:
     assert 'id/'+name in hierarchy,f'Missing main control: {name}'
 report={'main_window':True,'scroll_view':False,'all_main_controls_present':True}
 window=re.search(r'android\.widget\.FrameLayout\{[^\n]*? 0,0-(\d+),(\d+)',hierarchy)
@@ -35,7 +35,7 @@ assert window and panel,'Window geometry missing'
 w,h=map(int,window.groups());left,top,right,bottom=map(int,panel.groups())
 assert abs((left+right)/2-w/2)<=1 and abs((top+bottom)/2-h/2)<=1,'Dashboard is not centered'
 rectangles={}
-for name in ['brand_title','controller_name','controller_model','display_info','source_status','sync_latency','sweep_latency','connection_status','color_preview','light_toggle','brightness_control','speed_control','direction_control','calibration_control','about_control']:
+for name in ['brand_title','controller_name','controller_model','light_group_label','display_group_label','sync_group_label','display_info','source_status','sync_latency','sweep_latency','connection_status','color_preview','light_toggle','brightness_control','speed_control','direction_control','calibration_control','about_control']:
     rect=re.search(r'\{[^\n]*? (\d+),(\d+)-(\d+),(\d+) [^\n]*id/'+name,hierarchy)
     assert rect,f'Bounds missing: {name}'
     x,y,x2,y2=map(int,rect.groups())
@@ -45,7 +45,7 @@ report.update({'window_px':[w,h],'centered':True,'dashboard_bounds':[left,top,ri
 assert (right-left)/w<=.71,'Panel no longer uses the compact viewport'
 for name in ['light_toggle','brightness_control','speed_control','direction_control','calibration_control','about_control']:
     assert rectangles[name][2]<rectangles['color_preview'][0],'Controls must stay on the left'
-for name in ['brand_title','controller_name','controller_model','display_info','source_status','sync_latency','sweep_latency','connection_status']:
+for name in ['brand_title','controller_name','controller_model','light_group_label','display_group_label','sync_group_label','display_info','source_status','sync_latency','sweep_latency','connection_status']:
     assert rectangles[name][1]>=(bottom-top)*.81,'Status/project information must stay in the bottom bar'
 report.update({'controls_on_left':True,'preview_on_right':True,'information_in_footer':True,'compact_panel':True,'panel_relative_rectangles':rectangles})
 (args.output/'result.json').write_text(json.dumps(report,indent=2),encoding='utf-8')

@@ -19,4 +19,13 @@ public class Strip3FramesTest {
         int[] rgb=new int[20];for(int i=0;i<20;i++)rgb[i]=i+1;Strip3Frames.encode(rgb,1,25);
     }
     @Test(expected=IllegalArgumentException.class) public void otherLengthIsNotSilentlyClaimed(){Strip3Frames.encode(new int[40],1,25);}
+    @Test public void zeroBrightnessIsBlackWithoutMutatingInputOrUsingAnUnknownWireValue(){
+        int[] rgb=new int[20];java.util.Arrays.fill(rgb,0xff8030);
+        assertEquals("set_rgb_pc 0007 00 01 000000 f 000000 5",Strip3Frames.encode(rgb,7,0));
+        for(int color:rgb)assertEquals(0xff8030,color);
+    }
+    @Test public void midpointAndMaximumAreExactProtocolPercentages(){
+        assertTrue(Strip3Frames.encode(new int[20],1,50).startsWith("set_rgb_pc 0001 00 32 "));
+        assertTrue(Strip3Frames.encode(new int[20],1,100).startsWith("set_rgb_pc 0001 00 64 "));
+    }
 }

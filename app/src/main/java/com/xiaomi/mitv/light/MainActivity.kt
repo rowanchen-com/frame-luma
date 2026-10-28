@@ -49,19 +49,22 @@ class MainActivity : Activity(), UiFrameConsumer {
         val panel = DashboardPanel(this)
         preview = StripPreview(this).apply { id = R.id.color_preview }
         panel.place(preview, 470, 40, 400, 240)
-        panel.place(designText(this, "FrameLuma", 13f).apply { id = R.id.brand_title; typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL) }, 26, 342, 130, 20)
+        panel.place(designText(this, "FrameLuma", 13f).apply { id = R.id.brand_title; typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL) }, 26, 344, 116, 22)
         connection = designText(this, "", 10f).apply { id = R.id.connection_status }
-        panel.place(connection, 26, 370, 130, 17)
+        panel.place(connection, 26, 376, 116, 17)
+        panel.place(designText(this, "灯光设备", 10f, UiTheme.muted).apply { id = R.id.light_group_label }, 178, 333, 274, 15)
+        panel.place(designText(this, "显示设备", 10f, UiTheme.muted).apply { id = R.id.display_group_label }, 494, 333, 188, 15)
+        panel.place(designText(this, "同步速度", 10f, UiTheme.muted).apply { id = R.id.sync_group_label; gravity = Gravity.CENTER_VERTICAL or Gravity.END }, 726, 333, 148, 15)
         controllerName = designText(this, "", 12f, UiTheme.secondary).apply { id = R.id.controller_name }
         controllerModel = designText(this, "", 10f, UiTheme.muted).apply { id = R.id.controller_model }
-        panel.place(controllerName, 178, 342, 278, 20); panel.place(controllerModel, 178, 370, 278, 17)
+        panel.place(controllerName, 178, 354, 274, 20); panel.place(controllerModel, 178, 378, 274, 15)
         device = designText(this, "", 11f, UiTheme.secondary).apply { id = R.id.display_info }
-        panel.place(device, 476, 342, 204, 20)
+        panel.place(device, 494, 354, 188, 20)
         status = designText(this, "准备画面…", 10f, UiTheme.muted).apply { id = R.id.source_status }
-        panel.place(status, 476, 370, 204, 17)
+        panel.place(status, 494, 378, 188, 15)
         latency = designText(this, "", 12f).apply { id = R.id.sync_latency; gravity = Gravity.CENTER_VERTICAL or Gravity.END }
         sweepLatency = designText(this, "", 10f, UiTheme.muted).apply { id = R.id.sweep_latency; gravity = Gravity.CENTER_VERTICAL or Gravity.END }
-        panel.place(latency, 700, 342, 174, 20); panel.place(sweepLatency, 700, 370, 174, 17)
+        panel.place(latency, 726, 354, 148, 20); panel.place(sweepLatency, 726, 378, 148, 15)
 
         power = tile(panel, R.id.light_toggle, "灯带随影", 24, 80)
         powerSwitch = SlideToggle(this).apply { id = R.id.light_switch }
@@ -119,7 +122,7 @@ class MainActivity : Activity(), UiFrameConsumer {
         stageBrightness((pendingBrightness ?: AppCore.brightness()) + delta); render()
     }
     private fun stageBrightness(value: Int) {
-        pendingBrightness = value.coerceIn(1, 100)
+        pendingBrightness = value.coerceIn(0, 100)
         handler.removeCallbacks(saveBrightness); handler.postDelayed(saveBrightness, 600)
         brightnessSlider.show(pendingBrightness!!)
     }
@@ -172,7 +175,7 @@ class MainActivity : Activity(), UiFrameConsumer {
                 else -> "准备随影画面…"
             }
             val reporting = AppCore.enabled() && engine?.optBoolean("running", false) == true
-            latency.text = if (reporting) "同步间隔 ${engine?.optInt("output_interval_ms", 0)} ms" else "同步已停止"
+            latency.text = if (reporting) "间隔 ${engine?.optInt("output_interval_ms", 0)} ms" else "同步已停止"
             sweepLatency.text = if (reporting) "九区轮换 ${engine?.optInt("actual_period_ms", 0)} ms" else "— ms"
         }
         updatePreview()

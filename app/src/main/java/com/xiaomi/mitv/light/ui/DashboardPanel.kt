@@ -33,6 +33,7 @@ class DashboardPanel(context: Context) : ViewGroup(context) {
     private val bounds = RectF()
     private val edge = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; color = 0x2bffffff }
     private val separators = intArrayOf(79, 137, 195)
+    private val footerDividers = intArrayOf(158, 472, 704)
     private var unit = Float.NaN
     init { id = R.id.dashboard_panel; setWillNotDraw(false) }
     fun place(view: View, x: Int, y: Int, w: Int, h: Int) {
@@ -78,5 +79,7 @@ class DashboardPanel(context: Context) : ViewGroup(context) {
         paint.color = 0x24ffffff; canvas.drawRect(26 * unit, 324 * unit, width - 26 * unit, 325 * unit, paint)
         paint.color = 0x16ffffff
         for (y in separators) canvas.drawRect(42 * unit, y * unit, 406 * unit, (y + .6f) * unit, paint)
+        paint.color = 0x2bffffff
+        for (x in footerDividers) canvas.drawRect(x * unit, 340 * unit, (x + .7f) * unit, 387 * unit, paint)
     }
 }

@@ -5,7 +5,9 @@ import java.util.Locale;
 public final class Strip3Frames {
     private Strip3Frames() {}
     public static String encode(int[] rgb,int sequence,int brightness) {
-        if(rgb==null||rgb.length!=20||brightness<1||brightness>100)throw new IllegalArgumentException("Verified 2m frame required");
+        if(rgb==null||rgb.length!=20||brightness<0||brightness>100)throw new IllegalArgumentException("Verified 2m frame required");
+        // Zero is an all-black frame at the already-validated wire brightness 1, not a new firmware command.
+        if(brightness==0){for(int color:rgb)if(color<0||color>0xffffff)throw new IllegalArgumentException("RGB range");return String.format(Locale.ROOT,"set_rgb_pc %04x 00 01 000000 f 000000 5",sequence&65535);}
         StringBuilder out=new StringBuilder(String.format(Locale.ROOT,"set_rgb_pc %04x 00 %02x",sequence&65535,brightness));
         for(int start=0;start<rgb.length;) {
             int color=rgb[start];if(color<0||color>0xffffff)throw new IllegalArgumentException("RGB range");

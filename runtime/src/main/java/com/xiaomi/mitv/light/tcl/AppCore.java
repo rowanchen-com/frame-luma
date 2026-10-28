@@ -29,7 +29,7 @@ public final class AppCore {
   if(value==power()&&(value||!enabled()))return;
   SharedPreferences.Editor e=prefs().edit().putBoolean("power",value);if(!value){e.putBoolean("enabled",false);clearLocator();}e.apply();changed();
  }
- public static void setBrightness(int value){value=Math.max(1,Math.min(100,value));if(value!=brightness()){prefs().edit().putInt("brightness",value).apply();changed();}}
+ public static void setBrightness(int value){value=Math.max(0,Math.min(100,value));if(value!=brightness()){prefs().edit().putInt("brightness",value).apply();changed();}}
  public static void setPeriod(int value){value=com.xiaomi.mitv.light.core.FramePacer.normalizeLegacyPeriod(value);if(value!=period()){prefs().edit().putInt("period",value).apply();changed();}}
  public static void setUiVisible(boolean value){uiVisible=value;if(!value)uiFrames.clear();}
  public static void publishUiFrame(int[] colors,String layout){if(uiVisible)uiFrames.publish(colors,android.os.SystemClock.elapsedRealtime(),layout);}
@@ -62,7 +62,8 @@ public final class AppCore {
  }
  public static synchronized void clearLocator(){locatorUnit=0;locatorZone=-1;locatorUntil=0;}
  public static synchronized String settings(){JSONObject j=new JSONObject();try{
-  j.put("enabled",enabled());j.put("power",power());j.put("period_ms",period());j.put("brightness_percent",brightness());j.put("layout",layout().json());j.put("ui_visible",uiVisible);
+  // Frozen installed host validates 1..100. The new engine separately reads the logical 0..100 value.
+  j.put("enabled",enabled());j.put("power",power());j.put("period_ms",period());j.put("brightness_percent",Math.max(1,brightness()));j.put("user_brightness_percent",brightness());j.put("layout",layout().json());j.put("ui_visible",uiVisible);
   if(android.os.SystemClock.elapsedRealtime()>=locatorUntil)clearLocator();
   j.put("locator_unit",locatorUnit);j.put("locator_zone",locatorZone);j.put("locator_until_elapsed",locatorUntil);
  }catch(Exception e){throw new IllegalStateException(e);}return j.toString();}
