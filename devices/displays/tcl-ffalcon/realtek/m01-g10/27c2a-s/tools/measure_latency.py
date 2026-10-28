@@ -14,7 +14,8 @@ parser.add_argument('--serial', required=True)
 parser.add_argument('--adb', default='adb')
 parser.add_argument('--seconds', type=int, default=8, choices=range(3, 31))
 parser.add_argument('--output', type=Path, default=Path('.local/latency.json'))
-parser.add_argument('--revision', default='frame-luma-4')
+parser.add_argument('--revision', default='frame-luma-5')
+parser.add_argument('--source', choices=['device','own_app'],default='device')
 args = parser.parse_args()
 base = [args.adb, '-s', args.serial]
 
@@ -56,6 +57,8 @@ try:
             engine = value.get('engine', {})
             if engine.get('engine_revision') != args.revision or value.get('event') != 'status':
                 continue
+            if engine.get('capture_source') != args.source:
+                continue
             sequence = engine.get('batches', 0)
             if engine.get('running') and engine.get('sweeps', 0) > 1 and sequence not in seen:
                 seen.add(sequence)
@@ -79,6 +82,7 @@ report = {
     'measured_at': datetime.datetime.now().astimezone().isoformat(),
     'revision': engines[-1]['engine_revision'], 'status_samples': len(statuses),
     'settings_period_ms': engines[-1]['period_ms'], 'progressive': engines[-1]['progressive'],
+    'capture_source': engines[-1]['capture_source'],
     'sample_points': engines[-1]['sample_points'],
     'median': {k: statistics.median(e[k] for e in engines) for k in fields},
     'minimum': {k: min(e[k] for e in engines) for k in fields},

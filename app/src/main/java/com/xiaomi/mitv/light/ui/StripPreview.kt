@@ -7,7 +7,8 @@ import com.xiaomi.mitv.light.core.EdgeLayout
 import kotlin.math.min
 
 class StripPreview(context: Context) : View(context) {
-    private val panel = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xcc10101b.toInt() }
+    private val panel = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xff13252b.toInt() }
+    private val brand = Paint(Paint.ANTI_ALIAS_FLAG).apply { textAlign = Paint.Align.CENTER; typeface = Typeface.create("sans-serif-light", Typeface.NORMAL) }
     private val light = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 5 * resources.displayMetrics.density }
     private val rect = RectF()
     private val path = Path()
@@ -22,9 +23,14 @@ class StripPreview(context: Context) : View(context) {
     }
 
     override fun onDraw(canvas: Canvas) {
+        light.strokeWidth = width * .012f
         val inset = light.strokeWidth
         rect.set(inset, inset, width - inset, height - inset)
         canvas.drawRoundRect(rect, inset, inset, panel)
+        brand.color = 0xffb0e8cf.toInt(); brand.textSize = width * .16f
+        canvas.drawText("F", width * .5f, height * .55f, brand)
+        brand.color = 0xff6b9e90.toInt(); brand.textSize = width * .035f
+        canvas.drawText("FRAME  /  LUMA", width * .5f, height * .73f, brand)
         val w = rect.width(); val h = rect.height(); val perimeter = 2 * (w + h)
         val total = colors.size.coerceAtLeast(1)
         val corners = floatArrayOf(w / 2, w / 2 + h, w * 1.5f + h, w * 1.5f + h * 2)

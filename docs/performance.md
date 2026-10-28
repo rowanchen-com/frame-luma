@@ -27,4 +27,6 @@ python devices/displays/tcl-ffalcon/realtek/m01-g10/27c2a-s/tools/measure_latenc
 
 默认测量8秒，只请求受限的状态操作，不修改设置、不清日志，也不在电视上写测量文件。报告保存在电脑`.local/latency.json`。其它品牌的设备诊断工具应放在自己的型号目录。
 
+默认测量`device`来源，先退出映光页面进入DP。测自身界面时添加`--source own_app`，避免把App内存画面约150ms的完整更新与TCL硬件九点约270ms混为一项。页面本身的自适应和来源切换见[界面说明](interface.md)。
+
 离线`ZoneSamplerTest`使用每点30ms的确定性后端复现等待：旧的整轮后输出在270ms才首次发送，分批版本在90ms即可首次发送。测试还覆盖首轮完整初始化、同帧后端和取消后的停止输出；USB测试覆盖跨包错误及握手完整响应。

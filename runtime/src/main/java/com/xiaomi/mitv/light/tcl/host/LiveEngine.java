@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 /** Stable host ABI. One capture/output owner, bounded status, no per-frame disk writes. */
 public final class LiveEngine {
-    private static final String REVISION = "frame-luma-4";
+    private static final String REVISION = "frame-luma-5";
     private static final Uri STATE = Uri.parse("content://com.xiaomi.mitv.light.tcl.state/state");
     private final Context host;
     private volatile Thread worker;
@@ -24,6 +24,7 @@ public final class LiveEngine {
     private volatile int outputIntervalMs, outputWriteMs, firstUpdateMs;
     private long previousOutputAt, previousPreviewAt;
     private volatile boolean progressive;
+    private volatile String captureSource = "device";
     private volatile int[] lastColors = new int[9];
     private volatile String deviceName = "等待机型验证", deviceId = "", lightName = "", lastError = "";
     private volatile Integer projectId;
@@ -51,7 +52,7 @@ public final class LiveEngine {
             return until > SystemClock.elapsedRealtime() && (locatorUnit > 0 || locatorZone >= 0);
         }
         boolean sameFrameOptions(Options other) {
-            return other != null && period == other.period && brightness == other.brightness
+            return other != null && period == other.period && brightness == other.brightness && ui == other.ui
                     && locatorUnit == other.locatorUnit && locatorZone == other.locatorZone
                     && until == other.until && layoutKey.equals(other.layoutKey);
         }
@@ -86,6 +87,7 @@ public final class LiveEngine {
             json.put("capture_elapsed_ms", captureMs); json.put("actual_period_ms", cycleMs);
             json.put("first_update_ms", firstUpdateMs); json.put("output_interval_ms", outputIntervalMs);
             json.put("output_write_ms", outputWriteMs); json.put("progressive", progressive);
+            json.put("capture_source", captureSource);
             json.put("sample_points", pointCount); json.put("batches", batches); json.put("sweeps", sweeps);
             json.put("device_id", deviceId); json.put("device_name", deviceName);
             json.put("light_name", lightName); json.put("project_id", projectId); json.put("error", lastError);
@@ -125,11 +127,31 @@ public final class LiveEngine {
                     final long[] outputTime = {0};
                     final boolean[] first = {true};
                     progressive = pointBackend && current.period <= 300 && !current.locating();
+                    Bundle ui = host.getContentResolver().call(STATE, "ui_frame", null, null);
+                    boolean ownVisible = ui != null && ui.getBoolean("visible", false);
+                    int[] ownColors = ownVisible ? ui.getIntArray("colors") : null;
+                    long uiAt = ui == null ? 0 : ui.getLong("at", 0), now = SystemClock.elapsedRealtime();
+                    boolean ownFresh = ownColors != null && ownColors.length == 9 && uiAt <= now
+                            && now - uiAt <= ZoneFrameMailbox.MAX_AGE_MS && current.layoutKey.equals(ui.getString("layout"));
                     if (current.locating()) {
+                        captureSource = "locator";
                         send(output, current.locatorUnit > 0 ? layout.locate(current.locatorUnit)
                                 : layout.markZone(current.locatorZone), Math.min(current.brightness, 25));
                         pointCount = 0;
+                    } else if (ownVisible) {
+                        // The hardware API reads the video plane, excluding our Android UI.
+                        // Our own visible View tree supplies a separate, expiring RAM source.
+                        captureSource = "own_app"; progressive = false;
+                        if (!ownFresh) { SystemClock.sleep(25); continue; }
+                        for (int color : ownColors) if (color < 0 || color > 0xffffff) throw new Exception("Invalid own UI color");
+                        long before = SystemClock.elapsedRealtime();
+                        send(output, layout.map(ownColors), current.brightness);
+                        outputTime[0] = SystemClock.elapsedRealtime() - before;
+                        lastColors = ownColors.clone(); pointCount = 9 * current.layout.samples;
+                        firstUpdateMs = (int) (SystemClock.elapsedRealtime() - started);
+                        if (now - previousPreviewAt >= 250) { previousPreviewAt = now; publishPreview(); }
                     } else {
+                        captureSource = "device";
                         if (coordinates == null || previousSamples != current.layout.samples || previousDepth != current.layout.depth) {
                             coordinates = EdgeRegions.points(source.width(), source.height(), current.layout.samples, current.layout.depth);
                             previousSamples = current.layout.samples; previousDepth = current.layout.depth;

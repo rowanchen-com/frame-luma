@@ -12,6 +12,7 @@ public final class AppCore {
  private static int locatorUnit,locatorZone=-1;
  private static long locatorUntil;
  private static volatile boolean uiVisible;
+ private static final com.xiaomi.mitv.light.core.ZoneFrameMailbox uiFrames=new com.xiaomi.mitv.light.core.ZoneFrameMailbox();
  private static volatile String defaultLayout;
  public static synchronized void initialize(Context value){if(context==null)context=value.getApplicationContext();}
  public static Context context(){return context;}
@@ -30,7 +31,14 @@ public final class AppCore {
  }
  public static void setBrightness(int value){value=Math.max(1,Math.min(100,value));if(value!=brightness()){prefs().edit().putInt("brightness",value).apply();changed();}}
  public static void setPeriod(int value){value=com.xiaomi.mitv.light.core.FramePacer.normalizeLegacyPeriod(value);if(value!=period()){prefs().edit().putInt("period",value).apply();changed();}}
- public static void setUiVisible(boolean value){uiVisible=value;}
+ public static void setUiVisible(boolean value){uiVisible=value;if(!value)uiFrames.clear();}
+ public static void publishUiFrame(int[] colors,String layout){if(uiVisible)uiFrames.publish(colors,android.os.SystemClock.elapsedRealtime(),layout);}
+ public static android.os.Bundle uiFrame(){
+  android.os.Bundle result=new android.os.Bundle();result.putBoolean("visible",uiVisible);
+  com.xiaomi.mitv.light.core.ZoneFrameMailbox.Frame frame=uiVisible?uiFrames.read(android.os.SystemClock.elapsedRealtime()):null;
+  if(frame!=null){result.putIntArray("colors",frame.colors);result.putString("layout",frame.layout);result.putLong("at",frame.at);}
+  return result;
+ }
  public static LayoutOptions layout(){try{
   String stored=prefs().getString("layout",null);
   if(stored==null&&defaultLayout!=null)stored=defaultLayout;

@@ -13,6 +13,7 @@ public final class StateProvider extends ContentProvider {
   Bundle result=new Bundle();
   try{
    if("settings".equals(method))result.putString("json",AppCore.settings());
+   else if("ui_frame".equals(method))return AppCore.uiFrame();
    else if("state".equals(method))result.putString("json",AppCore.state());
    else if("report".equals(method)&&uid==1000){AppCore.report(extras.getString("json","{}"));result.putBoolean("ok",true);}
    else if("apply".equals(method)&&uid==1000){

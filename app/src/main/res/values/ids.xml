@@ -1,0 +1,11 @@
+<resources>
+    <item name="dashboard_panel" type="id" />
+    <item name="brand_title" type="id" />
+    <item name="light_toggle" type="id" />
+    <item name="brightness_control" type="id" />
+    <item name="speed_control" type="id" />
+    <item name="direction_control" type="id" />
+    <item name="calibration_control" type="id" />
+    <item name="about_control" type="id" />
+    <item name="design_text_size" type="id" />
+</resources>

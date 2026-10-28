@@ -12,7 +12,7 @@ val signingAlias = policy["key_alias"].toString()
 android {
     namespace = "com.xiaomi.mitv.light"
     compileSdk = 34
-    defaultConfig { applicationId = "com.xiaomi.mitv.light"; minSdk = 21; targetSdk = 34; versionCode = 110; versionName = "0.1.0-alpha.3" }
+    defaultConfig { applicationId = "com.xiaomi.mitv.light"; minSdk = 21; targetSdk = 34; versionCode = 112; versionName = "0.1.0-alpha.5" }
     signingConfigs {
         create("pinned") {
             if(keyPath != null)storeFile=rootProject.file(keyPath)
@@ -26,7 +26,7 @@ android {
     compileOptions { sourceCompatibility=JavaVersion.VERSION_1_8;targetCompatibility=JavaVersion.VERSION_1_8 }
     kotlinOptions { jvmTarget="1.8" }
 }
-dependencies { implementation(project(":runtime")) }
+dependencies { implementation(project(":runtime")); testImplementation("junit:junit:4.13.2") }
 val verifyPinnedSigning by tasks.registering {
     doLast {
         require(!keyPath.isNullOrBlank()&&!signingPassword.isNullOrBlank()) { "Set existing signing key in ignored local.properties or FRAME_LUMA_*; no key will be generated. Use -PunsignedBuild=true for an unsigned contributor build." }

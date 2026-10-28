@@ -4,6 +4,10 @@
 
 **当前是源码重构的alpha版本。** 首期模块为TCL 27C2A-S（M01/G10、V064、Project32）和米家`philips.light.strip3`的2米灯带。已同签名覆盖安装并在线加载，DP正常画面随影得到现场确认。流畅档九区分批输出，实测软件输出更新间隔约90ms；完整九区轮换仍约270ms。四源色块对照、物理贴装与HDR验证仍待完成，其它品牌和长度尚未声明支持。
 
+![FrameLuma主界面](docs/images/dashboard-1080p.png)
+
+主界面居中一屏，速度为低／中／快。App内的背景随影读取自身实际绘制画面，退出后自动恢复设备画面来源。
+
 ## 构建
 
 环境：JDK17、Android SDK34／Build Tools34.0.0；Gradle Wrapper会按锁定版本初始化。源码使用Kotlin界面、Java核心／机型模块和JSON配置，不依赖原厂APK底座或随包的厂商SO。
@@ -42,6 +46,7 @@ python scripts/verify_apk.py
 - [添加机型或灯光模块](docs/contributing.md)
 - [首次重构验证状态](docs/validation.md)
 - [延迟、速度档与测量方法](docs/performance.md)
+- [主界面适配与背景随影](docs/interface.md)
 - [代码及设计来源](THIRD_PARTY_NOTICES.md)
 
 ## 许可
