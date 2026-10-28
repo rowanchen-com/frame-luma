@@ -2,6 +2,15 @@
     <item name="dashboard_panel" type="id" />
     <item name="brand_title" type="id" />
     <item name="light_toggle" type="id" />
+    <item name="light_switch" type="id" />
+    <item name="controller_name" type="id" />
+    <item name="controller_model" type="id" />
+    <item name="color_preview" type="id" />
+    <item name="connection_status" type="id" />
+    <item name="display_info" type="id" />
+    <item name="source_status" type="id" />
+    <item name="sync_latency" type="id" />
+    <item name="sweep_latency" type="id" />
     <item name="brightness_control" type="id" />
     <item name="speed_control" type="id" />
     <item name="direction_control" type="id" />

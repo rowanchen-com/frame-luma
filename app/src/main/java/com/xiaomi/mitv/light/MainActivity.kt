@@ -18,12 +18,18 @@ class MainActivity : Activity(), UiFrameConsumer {
     private lateinit var backdrop: AmbientBackdrop
     private lateinit var preview: StripPreview
     private lateinit var power: ControlTile
-    private lateinit var brightnessValue: TextView
+    private lateinit var powerSwitch: SlideToggle
+    private var renderingSwitch = false
+    private lateinit var brightnessSlider: BrightnessSlider
     private lateinit var speedChoices: List<TextView>
     private lateinit var direction: ControlTile
     private lateinit var device: TextView
     private lateinit var connection: TextView
+    private lateinit var controllerName: TextView
+    private lateinit var controllerModel: TextView
     private lateinit var status: TextView
+    private lateinit var latency: TextView
+    private lateinit var sweepLatency: TextView
     private val handler = Handler(Looper.getMainLooper())
     private var ownColors: IntArray? = null
     private var pendingBrightness: Int? = null
@@ -41,37 +47,43 @@ class MainActivity : Activity(), UiFrameConsumer {
         backdrop = AmbientBackdrop(this)
         root.addView(backdrop, FrameLayout.LayoutParams(-1, -1))
         val panel = DashboardPanel(this)
-        panel.place(ImageView(this).apply { setImageResource(R.drawable.ic_launcher) }, 28, 24, 36, 36)
-        panel.place(designText(this, "映光", 28f).apply { id = R.id.brand_title; typeface = Typeface.DEFAULT_BOLD }, 78, 22, 94, 40)
-        panel.place(designText(this, "FRAME LUMA", 12f, 0xff9eb9b1.toInt()).apply { letterSpacing = .17f }, 181, 32, 180, 22)
-        connection = designText(this, "", 12f).apply { gravity = Gravity.CENTER_VERTICAL or Gravity.END }
-        panel.place(connection, 686, 30, 178, 25)
-        panel.place(designText(this, "画面之外，也有光。", 20f).apply { typeface = Typeface.DEFAULT_BOLD }, 36, 100, 338, 32)
-        panel.place(designText(this, "九区环绕 · 实时随影", 12f, 0xff93b4ac.toInt()), 36, 137, 338, 22)
-        preview = StripPreview(this)
-        panel.place(preview, 34, 179, 334, 179)
-        device = designText(this, "", 12f, 0xffa1b9b2.toInt())
-        panel.place(device, 36, 371, 337, 21)
-        status = designText(this, "准备画面…", 11f, 0xff7f9c94.toInt())
-        panel.place(status, 36, 399, 338, 18)
+        preview = StripPreview(this).apply { id = R.id.color_preview }
+        panel.place(preview, 470, 40, 400, 240)
+        panel.place(designText(this, "FrameLuma", 13f).apply { id = R.id.brand_title; typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL) }, 26, 342, 130, 20)
+        connection = designText(this, "", 10f).apply { id = R.id.connection_status }
+        panel.place(connection, 26, 370, 130, 17)
+        controllerName = designText(this, "", 12f, UiTheme.secondary).apply { id = R.id.controller_name }
+        controllerModel = designText(this, "", 10f, UiTheme.muted).apply { id = R.id.controller_model }
+        panel.place(controllerName, 178, 342, 278, 20); panel.place(controllerModel, 178, 370, 278, 17)
+        device = designText(this, "", 11f, UiTheme.secondary).apply { id = R.id.display_info }
+        panel.place(device, 476, 342, 204, 20)
+        status = designText(this, "准备画面…", 10f, UiTheme.muted).apply { id = R.id.source_status }
+        panel.place(status, 476, 370, 204, 17)
+        latency = designText(this, "", 12f).apply { id = R.id.sync_latency; gravity = Gravity.CENTER_VERTICAL or Gravity.END }
+        sweepLatency = designText(this, "", 10f, UiTheme.muted).apply { id = R.id.sweep_latency; gravity = Gravity.CENTER_VERTICAL or Gravity.END }
+        panel.place(latency, 700, 342, 174, 20); panel.place(sweepLatency, 700, 370, 174, 17)
 
-        power = tile(panel, R.id.light_toggle, "灯带随影", 98)
-        power.setOnClickListener {
-            val enabled = !AppCore.enabled()
-            if (enabled) AppCore.setEnabled(true) else AppCore.setPower(false)
-            Client.flow(this, enabled); render()
+        power = tile(panel, R.id.light_toggle, "灯带随影", 24, 80)
+        powerSwitch = SlideToggle(this).apply { id = R.id.light_switch }
+        power.values.removeAllViews(); power.values.addView(powerSwitch, LinearLayout.LayoutParams(-2, -1))
+        powerSwitch.setOnCheckedChangeListener { _, checked -> if (!renderingSwitch) applyEnabled(checked) }
+        power.setOnClickListener { powerSwitch.performClick() }
+        power.setOnKeyListener { _, code, event ->
+            if (event.action == KeyEvent.ACTION_DOWN && code in intArrayOf(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT)) {
+                applyEnabled(code == KeyEvent.KEYCODE_DPAD_RIGHT); true
+            } else false
         }
-        val brightness = tile(panel, R.id.brightness_control, "亮度", 164, 146)
-        val steps = brightness.choices(listOf("−", "", "+")) { changeBrightness(if (it == 0) -5 else 5) }
-        brightnessValue = steps[1]
-        brightness.setOnClickListener { changeBrightness(5) }
+        val brightness = tile(panel, R.id.brightness_control, "亮度", 82, 235)
+        brightnessSlider = BrightnessSlider(this) { stageBrightness(it) }
+        brightness.values.removeAllViews(); brightness.values.addView(brightnessSlider, LinearLayout.LayoutParams(-1, -1))
         brightness.setOnKeyListener { _, code, event ->
             if (event.action == KeyEvent.ACTION_DOWN && code in intArrayOf(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT)) {
                 changeBrightness(if (code == KeyEvent.KEYCODE_DPAD_LEFT) -5 else 5); true
             } else false
         }
-        val speed = tile(panel, R.id.speed_control, "速度", 230, 146)
+        val speed = tile(panel, R.id.speed_control, "速度", 140, 146)
         speedChoices = speed.choices(listOf("低", "中", "快")) { setSpeed(it) }
+        speed.values.background = SegmentTrack()
         speedChoices.forEach { it.background = ChoiceSurface() }
         speed.setOnClickListener { changeSpeed(1) }
         speed.setOnKeyListener { _, code, event ->
@@ -79,7 +91,7 @@ class MainActivity : Activity(), UiFrameConsumer {
                 changeSpeed(if (code == KeyEvent.KEYCODE_DPAD_LEFT) -1 else 1); true
             } else false
         }
-        direction = tile(panel, R.id.direction_control, "环绕方向", 296)
+        direction = tile(panel, R.id.direction_control, "环绕方向", 198)
         direction.setOnClickListener {
             guarded { AppCore.setLayout(AppCore.layout().json().put("reverse", !AppCore.layout().reverse)); Client.refresh(this) }; render()
         }
@@ -87,10 +99,10 @@ class MainActivity : Activity(), UiFrameConsumer {
             id = R.id.calibration_control; value.text = "↗"
             setOnClickListener { startActivity(Intent(this@MainActivity, CalibrationActivity::class.java)) }
         }
-        val about = ControlTile(this, "关于映光", 20).apply {
+        val about = ControlTile(this, "关于", 20).apply {
             id = R.id.about_control; value.text = "↗"; setOnClickListener { showDetails() }
         }
-        panel.place(calibration, 430, 366, 210, 44); panel.place(about, 654, 366, 210, 44)
+        panel.place(calibration, 24, 266, 192, 40); panel.place(about, 232, 266, 192, 40)
         power.nextFocusDownId = brightness.id; brightness.nextFocusUpId = power.id
         brightness.nextFocusDownId = speed.id; speed.nextFocusUpId = brightness.id
         speed.nextFocusDownId = direction.id; direction.nextFocusUpId = speed.id
@@ -101,11 +113,22 @@ class MainActivity : Activity(), UiFrameConsumer {
     }
     private fun tile(panel: DashboardPanel, viewId: Int, label: String, top: Int, valueWidth: Int = 180): ControlTile {
         val tile = ControlTile(this, label, valueWidth).apply { id = viewId }
-        panel.place(tile, 430, top, 434, 56); return tile
+        panel.place(tile, 24, top, 400, 52); return tile
     }
     private fun changeBrightness(delta: Int) {
-        pendingBrightness = ((pendingBrightness ?: AppCore.brightness()) + delta).coerceIn(1, 100)
-        handler.removeCallbacks(saveBrightness); handler.postDelayed(saveBrightness, 600); render()
+        stageBrightness((pendingBrightness ?: AppCore.brightness()) + delta); render()
+    }
+    private fun stageBrightness(value: Int) {
+        pendingBrightness = value.coerceIn(1, 100)
+        handler.removeCallbacks(saveBrightness); handler.postDelayed(saveBrightness, 600)
+        brightnessSlider.show(pendingBrightness!!)
+    }
+    private fun applyEnabled(enabled: Boolean) {
+        if (enabled != AppCore.enabled()) {
+            if (enabled) AppCore.setEnabled(true) else AppCore.setPower(false)
+            Client.flow(this, enabled)
+        }
+        render()
     }
     private fun speedIndex() = when (AppCore.period()) { 1000 -> 0; 500 -> 1; else -> 2 }
     private fun setSpeed(index: Int) { AppCore.setPeriod(intArrayOf(1000, 500, 150)[index]); Client.refresh(this); render() }
@@ -114,34 +137,43 @@ class MainActivity : Activity(), UiFrameConsumer {
     private fun updatePreview() {
         guarded {
             val layout = AppCore.layout()
-            preview.update(ownColors ?: IntArray(9) { 0x34665b }, layout.geometry(), layout.reverse)
+            preview.update(ownColors ?: IntArray(9) { 0xb2b9c6 }, layout.geometry(), layout.reverse)
         }
     }
     private fun render() {
-        power.value.text = if (AppCore.enabled()) "开启  ●" else "关闭  ○"
-        power.value.setTextColor(if (AppCore.enabled()) 0xffa3f6ce.toInt() else 0xff90a8a0.toInt())
-        brightnessValue.text = "${pendingBrightness ?: AppCore.brightness()}%"
+        if (powerSwitch.isChecked != AppCore.enabled()) {
+            renderingSwitch = true; powerSwitch.isChecked = AppCore.enabled(); renderingSwitch = false
+        }
+        brightnessSlider.show(pendingBrightness ?: AppCore.brightness())
         speedChoices.forEachIndexed { i, view ->
             view.isSelected = i == speedIndex()
-            view.setTextColor(if (i == speedIndex()) 0xffb7ffdc.toInt() else 0xff6b8880.toInt())
+            view.setTextColor(if (i == speedIndex()) UiTheme.selectedText else UiTheme.secondary)
             view.typeface = if (i == speedIndex()) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
         }
         guarded {
             direction.value.text = if (AppCore.layout().reverse) "底部中央 → 右" else "底部中央 → 左"
             val engine = JSONObject(AppCore.state()).optJSONObject("engine")
             val identified = engine?.optString("device_name", "") ?: ""
-            device.text = if (identified.isNotBlank() && !engine?.optString("device_id", "").isNullOrBlank()) identified else "${Build.BRAND} · ${Build.MODEL}"
+            val displayName = if (identified.isNotBlank() && !engine?.optString("device_id", "").isNullOrBlank()) identified else "${Build.BRAND} · ${Build.MODEL}"
+            device.text = displayName
             val present = LightAccess.present(this)
-            connection.text = if (present) "●  灯带已连接" else "○  等待连接灯带"
-            connection.setTextColor(if (present) 0xffa3f6ce.toInt() else 0xffd5b58d.toInt())
             val error = engine?.optString("error", "") ?: ""
+            val model = engine?.optString("light_model", "") ?: ""
+            val verified = present && model.isNotBlank() && error.isEmpty()
+            connection.text = when { verified -> "●  已连接"; present -> "○  正在识别"; else -> "○  未连接" }
+            connection.setTextColor(if (verified) UiTheme.success else UiTheme.secondary)
+            controllerName.text = when { verified -> engine?.optString("light_name", "控制盒"); present -> "正在识别灯光控制盒"; else -> "连接USB灯光控制盒" }
+            controllerModel.text = if (verified) model else ""
             status.text = when {
                 !present -> "连接USB灯带，开始随影"
                 !AppCore.enabled() -> "随影已关闭"
                 error.isNotEmpty() -> error.take(70)
-                ownColors != null && engine?.optBoolean("running", false) == true -> "光，正在跟随画面流动"
+                ownColors != null && engine?.optBoolean("running", false) == true -> "正在同步 · ${listOf("低", "中", "快")[speedIndex()]}"
                 else -> "准备随影画面…"
             }
+            val reporting = AppCore.enabled() && engine?.optBoolean("running", false) == true
+            latency.text = if (reporting) "同步间隔 ${engine?.optInt("output_interval_ms", 0)} ms" else "同步已停止"
+            sweepLatency.text = if (reporting) "九区轮换 ${engine?.optInt("actual_period_ms", 0)} ms" else "— ms"
         }
         updatePreview()
     }

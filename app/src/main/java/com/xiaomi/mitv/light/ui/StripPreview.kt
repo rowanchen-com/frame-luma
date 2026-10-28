@@ -4,56 +4,64 @@ import android.content.Context
 import android.graphics.*
 import android.view.View
 import com.xiaomi.mitv.light.core.EdgeLayout
-import kotlin.math.min
 
+/** Thin segmented outline with a quiet interior; colors and lengths come from the actual strip layout. */
 class StripPreview(context: Context) : View(context) {
-    private val panel = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xff13252b.toInt() }
-    private val brand = Paint(Paint.ANTI_ALIAS_FLAG).apply { textAlign = Paint.Align.CENTER; typeface = Typeface.create("sans-serif-light", Typeface.NORMAL) }
-    private val light = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 5 * resources.displayMetrics.density }
+    private val screen = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xff1b1922.toInt() }
+    private val light = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE; strokeCap = Paint.Cap.BUTT; strokeJoin = Paint.Join.MITER
+    }
     private val rect = RectF()
-    private val path = Path()
-    private var colors = IntArray(20) { 0x334050 }
+    private val point = FloatArray(2)
+    private var zones = IntArray(9) { 0x8293b3 }
+    private var mapping = IntArray(0)
+    private var segments = emptyList<StripOutline.Segment>()
+    private var paths = emptyArray<Path>()
     private var reverse = false
+    private var stroke = 1f
 
     fun update(next: IntArray, layout: EdgeLayout, reversed: Boolean) {
         if (next.size != 9) return
-        val mapped = layout.map(next)
-        if (colors.contentEquals(mapped) && reverse == reversed) return
-        colors = mapped; reverse = reversed; invalidate()
+        val topology = IntArray(layout.unitCount()) { layout.zoneAt(it) }
+        val geometryChanged = !mapping.contentEquals(topology) || reverse != reversed
+        val colorsChanged = !zones.contentEquals(next)
+        if (!geometryChanged && !colorsChanged) return
+        zones = next.copyOf(); reverse = reversed
+        if (geometryChanged) {
+            mapping = topology; segments = StripOutline.segments(layout)
+            paths = Array(segments.size) { Path() }; rebuildPaths()
+        }
+        invalidate()
     }
-
-    override fun onDraw(canvas: Canvas) {
-        light.strokeWidth = width * .012f
-        val inset = light.strokeWidth
-        rect.set(inset, inset, width - inset, height - inset)
-        canvas.drawRoundRect(rect, inset, inset, panel)
-        brand.color = 0xffb0e8cf.toInt(); brand.textSize = width * .16f
-        canvas.drawText("F", width * .5f, height * .55f, brand)
-        brand.color = 0xff6b9e90.toInt(); brand.textSize = width * .035f
-        canvas.drawText("FRAME  /  LUMA", width * .5f, height * .73f, brand)
-        val w = rect.width(); val h = rect.height(); val perimeter = 2 * (w + h)
-        val total = colors.size.coerceAtLeast(1)
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) { rebuildPaths() }
+    private fun rebuildPaths() {
+        if (width <= 0 || height <= 0) return
+        val w = minOf(width * .88f, height * .86f * 16f / 9)
+        val h = w * 9f / 16
+        rect.set((width - w) / 2, (height - h) / 2, (width + w) / 2, (height + h) / 2)
+        stroke = w * .021f; light.strokeWidth = stroke
+        val perimeter = 2 * (w + h)
         val corners = floatArrayOf(w / 2, w / 2 + h, w * 1.5f + h, w * 1.5f + h * 2)
-        var at = 0f
-        for (unit in colors.indices) {
-            val length = perimeter / total
-            if (length <= 0) continue
-            val end = at + length - 1f
-            path.rewind(); point(at, w, h).let { path.moveTo(rect.left + it.first, rect.top + it.second) }
-            corners.filter { it > at && it < end }.forEach { d -> point(d, w, h).let { path.lineTo(rect.left + it.first, rect.top + it.second) } }
-            point(end, w, h).let { path.lineTo(rect.left + it.first, rect.top + it.second) }
-            light.color = 0xff000000.toInt() or colors[unit]; canvas.drawPath(path, light); at += length
+        val gap = maxOf(.7f, w * .002f)
+        for (i in segments.indices) {
+            val segment = segments[i]
+            val length = (segment.end - segment.start) * perimeter
+            val at = segment.start * perimeter + minOf(gap / 2, length / 8)
+            val end = segment.end * perimeter - minOf(gap / 2, length / 8)
+            val path = paths[i]; path.rewind()
+            StripOutline.point(at, w, h, reverse, point); path.moveTo(rect.left + point[0], rect.top + point[1])
+            for (corner in corners) if (corner > at && corner < end) {
+                StripOutline.point(corner, w, h, reverse, point); path.lineTo(rect.left + point[0], rect.top + point[1])
+            }
+            StripOutline.point(end, w, h, reverse, point); path.lineTo(rect.left + point[0], rect.top + point[1])
         }
     }
-    private fun point(distance: Float, w: Float, h: Float): Pair<Float, Float> {
-        var d = distance
-        val p = when {
-            d < w / 2 -> Pair(w / 2 - d, h)
-            (d - w / 2) < h -> Pair(0f, h - (d - w / 2))
-            (d - w / 2 - h) < w -> Pair(d - w / 2 - h, 0f)
-            (d - w * 1.5f - h) < h -> Pair(w, d - w * 1.5f - h)
-            else -> Pair(w - min(d - w * 1.5f - h * 2, w / 2), h)
+    override fun onDraw(canvas: Canvas) {
+        canvas.drawRect(rect.left - stroke / 2, rect.top - stroke / 2, rect.right + stroke / 2, rect.bottom + stroke / 2, screen)
+        for (i in segments.indices) {
+            val zone = segments[i].zone
+            light.color = if (zone < 0) 0xff34313d.toInt() else 0xff000000.toInt() or zones[zone]
+            canvas.drawPath(paths[i], light)
         }
-        return Pair(if (reverse) w - p.first else p.first, p.second)
     }
 }

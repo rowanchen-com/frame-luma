@@ -31,4 +31,14 @@ public class Strip3RepliesTest {
         assertTrue(Strip3Replies.complete("set_pc_linkage 0","ok\r\n"));
         assertTrue(Strip3Replies.complete("get_power","error rejected\r\n"));
     }
+    @Test public void identityComesFromValidatedCompleteReplyLines() {
+        com.xiaomi.mitv.light.core.LightIdentity identity=Strip3Replies.identity("rep_power 1\r\nphilips.light.strip3\r\n","2.1.8_0039\r\n");
+        assertEquals("philips.light.strip3",identity.model);assertEquals("2.1.8_0039",identity.firmware);
+    }
+    @Test(expected=IllegalArgumentException.class) public void bridgeMatchCannotStandInForControllerIdentity() {
+        Strip3Replies.identity("other.philips.light.strip3.clone\r\n","2.1.8_0039\r\n");
+    }
+    @Test(expected=IllegalArgumentException.class) public void unverifiedFirmwareDoesNotAcquireAnIdentity() {
+        Strip3Replies.identity("philips.light.strip3\r\n","unknown\r\n");
+    }
 }

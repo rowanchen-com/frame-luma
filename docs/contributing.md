@@ -6,7 +6,7 @@
 
 1. 在`devices/displays/品牌组/芯片厂商/平台/型号`或`devices/lights/厂商/型号`建立目录，参考已有完整模块。
 2. 提供`module.json`（schema_version=1、api_version=1、唯一id、入口类、kind、匹配规则与能力），及Android库`build.gradle.kts`。
-3. `src/`实现`DisplayModule`或`LightModule`。显示设备明确坐标面和采样类型；灯光设备明确连接、完整帧约束、会话开始结束和可重复关闭。
+3. `src/`实现`DisplayModule`或`LightModule`。显示设备明确坐标面和采样类型；灯光设备明确连接、完整帧约束、会话开始结束和可重复关闭。`LightOutput.identity()`仅返回握手校验后的控制盒型号／固件；USB串口芯片匹配不能代替控制盒识别。
 4. `config/`存放该型号默认值；机型资料、接口依据、支持版本和实机步骤放`README.md`及`docs/validation.md`，图片放`docs/images/`。
 5. `tests/`验证识别误匹配、布局／协议和边界；提交脱敏的必要测试数据。仅有服务名称、状态0或编译成功，不属于实际画面取色证据。
 

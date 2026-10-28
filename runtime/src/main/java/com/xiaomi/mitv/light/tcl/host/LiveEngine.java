@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 /** Stable host ABI. One capture/output owner, bounded status, no per-frame disk writes. */
 public final class LiveEngine {
-    private static final String REVISION = "frame-luma-5";
+    private static final String REVISION = "frame-luma-6";
     private static final Uri STATE = Uri.parse("content://com.xiaomi.mitv.light.tcl.state/state");
     private final Context host;
     private volatile Thread worker;
@@ -25,6 +25,7 @@ public final class LiveEngine {
     private long previousOutputAt, previousPreviewAt;
     private volatile boolean progressive;
     private volatile String captureSource = "device";
+    private volatile String lightModel = "", lightFirmware = "";
     private volatile int[] lastColors = new int[9];
     private volatile String deviceName = "等待机型验证", deviceId = "", lightName = "", lastError = "";
     private volatile Integer projectId;
@@ -91,6 +92,7 @@ public final class LiveEngine {
             json.put("sample_points", pointCount); json.put("batches", batches); json.put("sweeps", sweeps);
             json.put("device_id", deviceId); json.put("device_name", deviceName);
             json.put("light_name", lightName); json.put("project_id", projectId); json.put("error", lastError);
+            json.put("light_model", lightModel); json.put("light_firmware", lightFirmware);
             JSONArray colors = new JSONArray();
             for (int color : lastColors) colors.put(color);
             json.put("colors", colors);
@@ -111,7 +113,10 @@ public final class LiveEngine {
             DeviceIdentity identity = display.inspect(host);
             deviceName = display.displayName(); deviceId = display.id(); projectId = identity.projectId;
             LightModule light = Devices.light(host); lightName = light.displayName();
-            source = display.open(host, identity); output = light.open(host); output.begin();
+            source = display.open(host, identity); output = light.open(host);
+            lightModel = ""; lightFirmware = ""; output.begin();
+            LightIdentity lightIdentity=output.identity();
+            if(lightIdentity!=null){lightModel=lightIdentity.model;lightFirmware=lightIdentity.firmware;}
             final LightOutput target = output;
             boolean pointBackend = display.capabilities().mode == CaptureCapabilities.Mode.POINTS;
             ZoneSampler sampler = new ZoneSampler();

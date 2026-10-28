@@ -1,0 +1,143 @@
+{
+  "version_code": 118,
+  "actual_ui": {
+    "main_window": true,
+    "scroll_view": false,
+    "all_main_controls_present": true,
+    "window_px": [
+      1920,
+      1080
+    ],
+    "centered": true,
+    "dashboard_bounds": [
+      288,
+      241,
+      1632,
+      838
+    ],
+    "all_controls_inside_panel": true,
+    "controls_on_left": true,
+    "preview_on_right": true,
+    "information_in_footer": true,
+    "compact_panel": true,
+    "panel_relative_rectangles": {
+      "brand_title": [
+        39,
+        511,
+        233,
+        541
+      ],
+      "controller_name": [
+        266,
+        511,
+        681,
+        541
+      ],
+      "controller_model": [
+        266,
+        553,
+        681,
+        578
+      ],
+      "display_info": [
+        711,
+        511,
+        1016,
+        541
+      ],
+      "source_status": [
+        711,
+        553,
+        1016,
+        578
+      ],
+      "sync_latency": [
+        1045,
+        511,
+        1305,
+        541
+      ],
+      "sweep_latency": [
+        1045,
+        553,
+        1305,
+        578
+      ],
+      "connection_status": [
+        39,
+        553,
+        233,
+        578
+      ],
+      "color_preview": [
+        702,
+        60,
+        1299,
+        418
+      ],
+      "light_toggle": [
+        36,
+        36,
+        633,
+        114
+      ],
+      "brightness_control": [
+        36,
+        122,
+        633,
+        200
+      ],
+      "speed_control": [
+        36,
+        209,
+        633,
+        287
+      ],
+      "direction_control": [
+        36,
+        296,
+        633,
+        374
+      ],
+      "calibration_control": [
+        36,
+        397,
+        323,
+        457
+      ],
+      "about_control": [
+        346,
+        397,
+        633,
+        457
+      ]
+    }
+  },
+  "controller": {
+    "name": "米家追光氛围灯带",
+    "model": "philips.light.strip3",
+    "firmware": "2.1.8_0039"
+  },
+  "capture_source": "own_app",
+  "own_ui_colors_changing": true,
+  "single_sampling_thread": true,
+  "single_usb_fd": true,
+  "same_boot": true,
+  "host_pid_unchanged_from_v116": true,
+  "measured_output_interval_ms": 151,
+  "offline_tests": {
+    "unique": 31,
+    "variant_executions": 50,
+    "failures": 0,
+    "errors": 0
+  },
+  "scope": "Actual 1080p logical window; HD/QHD/UHD proportional geometry tested offline. Clockwise motion and nine-region geometry tested independently. No new optical end-to-end latency claim.",
+  "preview_style": {
+    "checked_pixels": 12684,
+    "dark_empty_pixels": 12684,
+    "empty_ratio": 1.0,
+    "no_center_text_or_color_fill": true
+  },
+  "apk_sha256": "7e9f25d926c8a6a7be1fd2e40f32f59826baf3227706a5bf3612cbe213cefc66",
+  "version_name": "0.1.0-alpha.11"
+}

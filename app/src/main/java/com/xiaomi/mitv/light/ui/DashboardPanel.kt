@@ -31,6 +31,8 @@ class DashboardPanel(context: Context) : ViewGroup(context) {
     private val slots = mutableListOf<Slot>()
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val bounds = RectF()
+    private val edge = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; color = 0x2bffffff }
+    private val separators = intArrayOf(79, 137, 195)
     private var unit = Float.NaN
     init { id = R.id.dashboard_panel; setWillNotDraw(false) }
     fun place(view: View, x: Int, y: Int, w: Int, h: Int) {
@@ -51,6 +53,8 @@ class DashboardPanel(context: Context) : ViewGroup(context) {
         setMeasuredDimension(w, h)
     }
     private fun scaleText(view: View) {
+        if (view is SlideToggle) { view.applyUnit(unit); return }
+        if (view is BrightnessSlider) view.applyUnit(unit)
         if (view is TextView) {
             val size = (view.getTag(R.id.design_text_size) as? Float ?: 15f) * unit
             view.setTextSize(TypedValue.COMPLEX_UNIT_PX, size)
@@ -67,13 +71,12 @@ class DashboardPanel(context: Context) : ViewGroup(context) {
     }
     override fun onDraw(canvas: Canvas) {
         bounds.set(.5f, .5f, width - .5f, height - .5f)
-        paint.style = Paint.Style.FILL; paint.color = 0xf2111b22.toInt()
-        canvas.drawRoundRect(bounds, 24 * unit, 24 * unit, paint)
-        paint.style = Paint.Style.STROKE; paint.strokeWidth = unit; paint.color = 0x4069bca8
-        canvas.drawRoundRect(bounds, 24 * unit, 24 * unit, paint)
-        paint.style = Paint.Style.FILL; paint.color = 0x24b2dacf
-        canvas.drawRect(402 * unit, 88 * unit, 403 * unit, 406 * unit, paint)
-        paint.color = 0xff8ee8c1.toInt()
-        canvas.drawRoundRect(28 * unit, 74 * unit, 68 * unit, 77 * unit, unit, unit, paint)
+        paint.style = Paint.Style.FILL; paint.color = 0xb0161720.toInt()
+        canvas.drawRoundRect(bounds, 18 * unit, 18 * unit, paint)
+        edge.style = Paint.Style.STROKE; edge.strokeWidth = unit
+        canvas.drawRoundRect(bounds, 18 * unit, 18 * unit, edge)
+        paint.color = 0x24ffffff; canvas.drawRect(26 * unit, 324 * unit, width - 26 * unit, 325 * unit, paint)
+        paint.color = 0x16ffffff
+        for (y in separators) canvas.drawRect(42 * unit, y * unit, 406 * unit, (y + .6f) * unit, paint)
     }
 }

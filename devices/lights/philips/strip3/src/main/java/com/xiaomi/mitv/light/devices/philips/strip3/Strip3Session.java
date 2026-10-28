@@ -1,5 +1,6 @@
 package com.xiaomi.mitv.light.devices.philips.strip3;
 import com.xiaomi.mitv.light.core.LightOutput;
+import com.xiaomi.mitv.light.core.LightIdentity;
 import android.content.Context;
 import android.hardware.usb.*;
 import android.os.SystemClock;
@@ -16,6 +17,7 @@ final class Strip3Session implements LightOutput {
         private volatile boolean reading;
         private volatile String readFailure;
         private Thread reader;
+        private LightIdentity controllerIdentity;
         UsbDeviceConnection connection;
         UsbInterface iface;
         UsbEndpoint input, output;
@@ -57,8 +59,7 @@ final class Strip3Session implements LightOutput {
         }
         public void begin() throws Exception {
             String model = exchange("model"), version = exchange("version");
-            if (!model.contains("philips.light.strip3") || !version.contains("2.1.8_0039"))
-                throw new Exception("Unexpected strip model/firmware");
+            LightIdentity detected=Strip3Replies.identity(model,version);
             length = scalar("get_length", 2, 5);
             if(length!=2)throw new Exception("Only the verified 2m strip profile is enabled");
             originalPower = scalar("get_power", 0, 1);
@@ -70,7 +71,9 @@ final class Strip3Session implements LightOutput {
             accept("set_pc_available 1"); accept("set_pc_linkage 1");
             if (scalar("get_pc_linkage", 0, 1) != 1) throw new Exception("Linkage did not enable");
             startReader();
+            controllerIdentity=detected;
         }
+        @Override public LightIdentity identity(){return controllerIdentity;}
         @Override public int unitCount(){return length*10;}
         @Override public void send(int[] rgb,int sequence,int brightness)throws Exception{
             if(length!=2)throw new Exception("Only the verified 2m profile is enabled");

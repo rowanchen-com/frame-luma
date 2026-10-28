@@ -4,6 +4,7 @@ package com.xiaomi.mitv.light.core;
 public interface LightOutput extends AutoCloseable {
     void begin() throws Exception;
     int unitCount();
+    default LightIdentity identity() { return null; }
     void send(int[] rgb, int sequence, int brightnessPercent) throws Exception;
     void end();
     @Override void close();

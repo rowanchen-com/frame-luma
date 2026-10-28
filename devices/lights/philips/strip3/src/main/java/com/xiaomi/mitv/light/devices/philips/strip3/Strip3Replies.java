@@ -1,11 +1,20 @@
 package com.xiaomi.mitv.light.devices.philips.strip3;
 
 import java.util.Locale;
+import com.xiaomi.mitv.light.core.LightIdentity;
 
 /** Streamed replies may cross USB packets. Keep only one bounded incomplete line. */
 final class Strip3Replies {
     private final StringBuilder line = new StringBuilder(128);
     private String failure;
+
+    static LightIdentity identity(String modelReply,String firmwareReply) {
+        return new LightIdentity(verifiedLine(modelReply,"philips.light.strip3"),verifiedLine(firmwareReply,"2.1.8_0039"));
+    }
+    private static String verifiedLine(String response,String expected) {
+        for(String line:response.split("[\\r\\n]+"))if(expected.equals(line.trim()))return line.trim();
+        throw new IllegalArgumentException("Unexpected controller model/firmware");
+    }
 
     static boolean complete(String command, String response) {
         for(String line:response.split("(?<=\\n)")) {
