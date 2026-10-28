@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "api_version": 1,
+  "id": "philips-strip3",
+  "kind": "light",
+  "entry_class": "com.xiaomi.mitv.light.devices.philips.strip3.PhilipsStrip3Module",
+  "display_name": "米家追光氛围灯带 · philips.light.strip3",
+  "match": {"usb_vid": 6790, "usb_pid": 29987, "model": "philips.light.strip3", "firmware": "2.1.8_0039"},
+  "capabilities": {"transport": "usb-ch340", "protocol": "set_rgb_pc", "color_order": "rgb", "maximum_frame_bytes_exclusive": 120, "maximum_run_units": 15, "validated_lengths_m": [2], "frame_ack": false}
+}

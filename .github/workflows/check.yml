@@ -1,0 +1,22 @@
+name: Source and module checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate device modules
+        run: python scripts/check_modules.py
+      - name: Build and test without any signing key
+        run: bash gradlew test :app:assembleRelease -PunsignedBuild=true --no-daemon
+      - name: Check frozen TCL host compatibility
+        run: python devices/displays/tcl-ffalcon/realtek/m01-g10/27c2a-s/tools/verify_host_abi.py

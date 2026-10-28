@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="430" viewBox="0 0 720 430">
+  <rect width="720" height="430" rx="18" fill="#111827"/>
+  <text x="360" y="36" fill="#e5e7eb" text-anchor="middle" font-size="20" font-family="sans-serif">Initial 2m / 20 units - front view - physical calibration pending</text>
+  <rect x="100" y="80" width="520" height="270" rx="10" fill="#172131" stroke="#53667e"/>
+  <g fill="none" stroke-width="13"><path stroke="#5dd7d6" d="M350 350H100V215"/><path stroke="#79b7ff" d="M100 215V80H273"/><path stroke="#b293ff" d="M273 80H447"/><path stroke="#f2a0c4" d="M447 80H620V215"/><path stroke="#ffc68f" d="M620 215V350H370"/></g>
+  <g fill="#eef0f7" font-family="sans-serif" font-size="18" text-anchor="middle"><text x="360" y="220">9 screen regions → 20 addressable units</text><text x="360" y="391">Start at bottom centre, go left first</text></g>
+</svg>

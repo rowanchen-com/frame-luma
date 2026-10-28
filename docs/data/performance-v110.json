@@ -1,0 +1,158 @@
+{
+  "application_version": "0.1.0-alpha.3",
+  "version_code": 110,
+  "apk_sha256": "ee8a3c47a152fe2d2b2349645049943ec1fcb13e4815b5d1b9bc67de8a5f10a0",
+  "device_module": "tcl-27c2a-s",
+  "firmware": "V8-M001T01-LF1V064",
+  "light_module": "philips-strip3",
+  "strip_length_m": 2,
+  "input": "DP",
+  "physical_mount_calibrated": false,
+  "baseline": {
+    "revision": "four-edge-9-v2",
+    "sample_points": 9,
+    "saved_status_samples": 80,
+    "median_full_frame_interval_ms": 269
+  },
+  "measurements": {
+    "fast": {
+      "measured_at": "2026-10-28T13:54:32.986862+08:00",
+      "revision": "frame-luma-4",
+      "status_samples": 16,
+      "settings_period_ms": 150,
+      "progressive": true,
+      "sample_points": 9,
+      "median": {
+        "capture_elapsed_ms": 256.0,
+        "actual_period_ms": 268.0,
+        "first_update_ms": 88.0,
+        "output_interval_ms": 88.0,
+        "output_write_ms": 4.0
+      },
+      "minimum": {
+        "capture_elapsed_ms": 252,
+        "actual_period_ms": 260,
+        "first_update_ms": 86,
+        "output_interval_ms": 86,
+        "output_write_ms": 2
+      },
+      "maximum": {
+        "capture_elapsed_ms": 264,
+        "actual_period_ms": 276,
+        "first_update_ms": 92,
+        "output_interval_ms": 92,
+        "output_write_ms": 4
+      },
+      "single_sampling_thread": true,
+      "single_usb_fd": true,
+      "same_boot_during_measurement": true,
+      "same_host_during_measurement": true,
+      "scope": "Software sampling and USB send completion; not camera-measured screen-to-photon latency"
+    },
+    "balanced": {
+      "measured_at": "2026-10-28T13:54:12.177985+08:00",
+      "revision": "frame-luma-4",
+      "status_samples": 9,
+      "settings_period_ms": 500,
+      "progressive": false,
+      "sample_points": 9,
+      "median": {
+        "capture_elapsed_ms": 256,
+        "actual_period_ms": 501,
+        "first_update_ms": 260,
+        "output_interval_ms": 500,
+        "output_write_ms": 4
+      },
+      "minimum": {
+        "capture_elapsed_ms": 250,
+        "actual_period_ms": 501,
+        "first_update_ms": 254,
+        "output_interval_ms": 484,
+        "output_write_ms": 4
+      },
+      "maximum": {
+        "capture_elapsed_ms": 262,
+        "actual_period_ms": 502,
+        "first_update_ms": 266,
+        "output_interval_ms": 512,
+        "output_write_ms": 4
+      },
+      "single_sampling_thread": true,
+      "single_usb_fd": true,
+      "same_boot_during_measurement": true,
+      "same_host_during_measurement": true,
+      "scope": "Software sampling and USB send completion; not camera-measured screen-to-photon latency"
+    },
+    "eco": {
+      "measured_at": "2026-10-28T13:54:22.316496+08:00",
+      "revision": "frame-luma-4",
+      "status_samples": 8,
+      "settings_period_ms": 1000,
+      "progressive": false,
+      "sample_points": 9,
+      "median": {
+        "capture_elapsed_ms": 254.5,
+        "actual_period_ms": 1004.0,
+        "first_update_ms": 258.5,
+        "output_interval_ms": 1004.0,
+        "output_write_ms": 4.0
+      },
+      "minimum": {
+        "capture_elapsed_ms": 254,
+        "actual_period_ms": 1004,
+        "first_update_ms": 258,
+        "output_interval_ms": 992,
+        "output_write_ms": 4
+      },
+      "maximum": {
+        "capture_elapsed_ms": 266,
+        "actual_period_ms": 1014,
+        "first_update_ms": 270,
+        "output_interval_ms": 1016,
+        "output_write_ms": 4
+      },
+      "single_sampling_thread": true,
+      "single_usb_fd": true,
+      "same_boot_during_measurement": true,
+      "same_host_during_measurement": true,
+      "scope": "Software sampling and USB send completion; not camera-measured screen-to-photon latency"
+    }
+  },
+  "lifecycle": {
+    "disabled": {
+      "running": false,
+      "sampling_threads": 0,
+      "usb_fds": 0
+    },
+    "enabled": {
+      "running": true,
+      "sampling_threads": 1,
+      "usb_fds": 1
+    },
+    "force_stopped": {
+      "running": false,
+      "sampling_threads": 0,
+      "usb_fds": 0
+    },
+    "restored": {
+      "running": true,
+      "sampling_threads": 1,
+      "usb_fds": 1
+    }
+  },
+  "display_and_host_restarted": false,
+  "same_signer_overlay_install": true,
+  "offline_tests": {
+    "unique": 18,
+    "variant_executions": 27,
+    "failures": 0,
+    "errors": 0
+  },
+  "pending": [
+    "physical mounting calibration",
+    "per-input known RGB-pattern regression",
+    "HDR",
+    "new source version uninstall test"
+  ],
+  "scope": "Software capture and USB completion, not camera-measured screen-to-photon latency. Each region still refreshes once per complete sweep."
+}

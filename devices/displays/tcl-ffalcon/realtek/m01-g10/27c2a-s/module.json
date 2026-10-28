@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "api_version": 1,
+  "id": "tcl-27c2a-s",
+  "kind": "display",
+  "entry_class": "com.xiaomi.mitv.light.devices.tcl.model27c2as.Tcl27C2asModule",
+  "display_name": "TCL 27C2A-S",
+  "platform_id": "m01-g10",
+  "soc_vendor": "realtek",
+  "soc_model": "rtd2885p",
+  "match": {"brand": "TCL", "product": "M01", "device": "G10", "model": "C3APRO", "hardware": "rtd2885p", "project_id": 32, "firmware_contains": "V8-M001T01-LF1V064"},
+  "capabilities": {"capture_mode": "points", "panel_width": 3840, "panel_height": 2160, "root_required": false, "caller": "tcl-ttvs-system-app-host", "inputs": {"DP": "verified", "HDMI1": "pending", "HDMI2": "pending", "internal_android": "pending"}}
+}

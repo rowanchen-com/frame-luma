@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="240" viewBox="0 0 1000 240">
+  <rect width="1000" height="240" rx="20" fill="#111827"/>
+  <g fill="#1f334a" stroke="#5cd5d3" stroke-width="2">
+    <rect x="24" y="62" width="210" height="112" rx="14"/>
+    <rect x="272" y="62" width="210" height="112" rx="14"/>
+    <rect x="520" y="62" width="210" height="112" rx="14"/>
+    <rect x="768" y="62" width="208" height="112" rx="14"/>
+  </g>
+  <g font-family="sans-serif" fill="#e5e7eb" text-anchor="middle" font-size="21">
+    <text x="129" y="108">Device capture</text><text x="129" y="139" font-size="15">pixels / frames</text>
+    <text x="377" y="108">Core engine</text><text x="377" y="139" font-size="15">layout / pacing / color</text>
+    <text x="625" y="108">Light module</text><text x="625" y="139" font-size="15">protocol / lifecycle</text>
+    <text x="872" y="108">Controller + LEDs</text><text x="872" y="139" font-size="15">verified capabilities</text>
+  </g>
+  <g fill="#a8b6ce" font-size="26" font-family="sans-serif"><text x="242" y="125">→</text><text x="490" y="125">→</text><text x="738" y="125">→</text></g>
+</svg>
