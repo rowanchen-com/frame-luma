@@ -10,7 +10,7 @@ Light beyond the screen. Ambient lighting for Android TVs and smart displays, wi
 
 ![English interface and ambient lighting](docs/images/setup-ambient-en.png)
 
-*Enhanced ambient-lighting visualization based on the supplied setup photo, with the English interface.*
+*Ambient-lighting scene visualization based on the supplied setup photo, with the English interface. The interface images below are direct device captures.*
 
 ## Interface
 
