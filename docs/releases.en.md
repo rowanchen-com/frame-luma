@@ -26,10 +26,10 @@ Set the repository's `FRAME_LUMA_KEYSTORE_BASE64` and `FRAME_LUMA_KEYSTORE_PASSW
 
 - A published Release builds its event's commit.
 - A manual run builds the selected branch. `release_tag` selects an existing published release whose assets will be replaced; an empty value uses Latest Release.
-- The download is named `frame-luma-<version>.apk`. Actions uploads the APK directly and retains it for 30 days.
-- Superseded FrameLuma APK assets are removed only after all new assets have uploaded successfully. Immutable releases cannot have their assets replaced.
+- The download is named `frame-luma-<version>.apk`. Actions and Releases provide the APK without a separate build-information JSON asset.
+- Superseded FrameLuma APKs and old build-information assets are removed only after the new APK uploads successfully. Immutable releases cannot have their assets replaced.
 
-The Actions artifact is saved before release replacement. A failed replacement does not delete that saved artifact. Build information records the manual run's commit, which may differ from the release tag's original commit.
+The Actions artifact is saved before release replacement. A failed replacement does not delete that saved artifact. Temporary Actions artifacts follow the repository retention policy; Release assets are unaffected by that expiry. The Actions run records the manual build's commit, which may differ from the release tag's original commit.
 
 ## Versioning
 

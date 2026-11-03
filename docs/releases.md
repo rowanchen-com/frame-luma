@@ -26,10 +26,10 @@ Fork自用时可以使用自己的密钥，在`gradle/config.json`中同步设�
 
 - 发布Release：构建该事件对应提交。
 - 手动运行：构建选定分支；`release_tag`指定要替换附件的已发布版本，留空使用Latest Release。
-- 下载文件为`frame-luma-<版本号>.apk`。Actions使用直接APK产物，保留30天。
-- 所有新附件上传成功后，才移除同一Release中过时的FrameLuma APK。不可变Release不能替换附件。
+- 下载文件为`frame-luma-<版本号>.apk`。Actions与Release均提供APK，不额外发布构建信息JSON。
+- 新APK上传成功后，才移除同一Release中过时的FrameLuma APK和旧构建信息附件。不可变Release不能替换附件。
 
-Actions下载产物先于Release替换保存；替换失败不会删除已保存的构建产物。手动构建的提交记录在构建信息中，可能与原发布标签不同。
+Actions下载产物先于Release替换保存；替换失败不会删除已保存的构建产物。Actions临时产物遵循仓库的保留策略，Release附件不受该期限影响。手动构建的提交可在Actions记录中查看，可能与原发布标签不同。
 
 ## 版本
 
