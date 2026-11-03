@@ -1,6 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="220" viewBox="0 0 1200 220" fill="none" role="img" aria-labelledby="brand-title">
   <title id="brand-title">FrameLuma · 映光</title>
-  <rect width="1200" height="220" fill="#FCFBF8" />
+  <style>
+    .brand-name { fill: #1f2328; }
+    @media (prefers-color-scheme: dark) { .brand-name { fill: #f0f6fc; } }
+  </style>
   <defs>
     <clipPath id="ring-outline" clipPathUnits="userSpaceOnUse">
       <path d="M71.5 54A17.5 17.5 0 1 0 36.5 54A17.5 17.5 0 1 0 71.5 54ZM66.5 54A12.5 12.5 0 1 0 41.5 54A12.5 12.5 0 1 0 66.5 54Z" clip-rule="evenodd" fill-rule="evenodd" />
@@ -1302,5 +1305,5 @@
       <path data-role="ray" d="M68.142136 36.322330L73.091883 31.372583C74.068194 30.396272 75.651106 30.396272 76.627417 31.372583C77.603728 32.348894 77.603728 33.931806 76.627417 34.908117L71.677670 39.857864C70.701359 40.834175 69.118447 40.834175 68.142136 39.857864C67.165825 38.881553 67.165825 37.298641 68.142136 36.322330Z" fill="#ED0ACB" />
     </g>
   </g>
-  <text x="600" y="192" text-anchor="middle" fill="#252420" font-family="Segoe UI, Arial, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="48" font-weight="600" letter-spacing="-.5">FrameLuma · 映光</text>
+  <text class="brand-name" x="600" y="192" text-anchor="middle" font-family="Segoe UI, Arial, Noto Sans CJK SC, Microsoft YaHei, sans-serif" font-size="48" font-weight="600" letter-spacing="-.5">FrameLuma · 映光</text>
 </svg>

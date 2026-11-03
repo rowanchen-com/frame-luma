@@ -153,12 +153,15 @@ def generate():
         "fill": "none", "role": "img", "aria-labelledby": "brand-title",
     })
     ET.SubElement(header, SVG + "title", {"id": "brand-title"}).text = "FrameLuma · 映光"
-    ET.SubElement(header, SVG + "rect", {"width": "1200", "height": "220", "fill": "#FCFBF8"})
+    ET.SubElement(header, SVG + "style").text = (
+        ".brand-name { fill: #1f2328; } "
+        "@media (prefers-color-scheme: dark) { .brand-name { fill: #f0f6fc; } }"
+    )
     header.append(deepcopy(source.find(SVG + "defs")))
     symbol = ET.SubElement(header, SVG + "g", {"transform": "translate(505.5 -18.5) scale(1.75)"})
     symbol.append(deepcopy(mark))
     ET.SubElement(header, SVG + "text", {
-        "x": "600", "y": "192", "text-anchor": "middle", "fill": "#252420",
+        "class": "brand-name", "x": "600", "y": "192", "text-anchor": "middle",
         "font-family": "Segoe UI, Arial, Noto Sans CJK SC, Microsoft YaHei, sans-serif",
         "font-size": "48", "font-weight": "600", "letter-spacing": "-.5",
     }).text = "FrameLuma · 映光"
