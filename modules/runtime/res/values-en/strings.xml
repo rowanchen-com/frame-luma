@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="follow_channel">Ambient follow</string>
+    <string name="follow_title">FrameLuma</string>
+    <string name="follow_text">Ambient lighting is running</string>
+    <string name="foreground_unavailable">The system did not allow the background device service. Reopen the app.</string>
+    <string name="background_service_label">FrameLuma background lighting</string>
+    <string name="background_service_description">Keeps enabled lighting in sync. Turning follow off stops capture and output. Does not read screen text, filter keys, or replace the launcher.</string>
+    <string name="background_service_required">Enable “FrameLuma background lighting” in system accessibility settings.</string>
+    <string name="recovery_listener_label">FrameLuma background recovery</string>
+</resources>

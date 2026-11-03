@@ -1,0 +1,46 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <permission android:name="${applicationId}.permission.CONTROL" android:protectionLevel="signature" />
+    <permission android:name="${applicationId}.permission.READ_STATE" android:protectionLevel="signature" />
+    <permission android:name="${applicationId}.permission.REPORT_STATE" android:protectionLevel="signature" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <application>
+        <provider android:name="frameluma.runtime.StateProvider" android:authorities="${applicationId}.state" android:exported="true" android:readPermission="${applicationId}.permission.READ_STATE" android:writePermission="${applicationId}.permission.REPORT_STATE" android:grantUriPermissions="false" />
+        <service android:name="frameluma.runtime.FollowService" android:exported="false" android:stopWithTask="false" android:foregroundServiceType="connectedDevice|specialUse">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="Ambient screen lighting using a connected USB controller" />
+        </service>
+        <service android:name="frameluma.runtime.BackgroundService" android:exported="true" android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" android:label="@string/background_service_label">
+            <intent-filter><action android:name="android.accessibilityservice.AccessibilityService" /></intent-filter>
+            <meta-data android:name="android.accessibilityservice" android:resource="@xml/background_service" />
+        </service>
+        <service android:name="frameluma.runtime.Recovery$Listener" android:exported="true" android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" android:label="@string/recovery_listener_label">
+            <intent-filter><action android:name="android.service.notification.NotificationListenerService" /></intent-filter>
+            <meta-data android:name="android.service.notification.default_filter_types" android:value="0" />
+            <meta-data android:name="android.service.notification.disabled_filter_types" android:value="ongoing|conversations|alerting|silent" />
+        </service>
+        <service android:name="frameluma.runtime.Recovery$Sync" android:exported="true" android:permission="android.permission.BIND_SYNC_ADAPTER">
+            <intent-filter><action android:name="android.content.SyncAdapter" /></intent-filter>
+            <meta-data android:name="android.content.SyncAdapter" android:resource="@xml/recovery_sync" />
+        </service>
+        <service android:name="frameluma.runtime.Recovery$AccountService" android:exported="true" android:permission="android.permission.BIND_ACCOUNT_AUTHENTICATOR">
+            <intent-filter><action android:name="android.accounts.AccountAuthenticator" /></intent-filter>
+            <meta-data android:name="android.accounts.AccountAuthenticator" android:resource="@xml/recovery_account" />
+        </service>
+        <receiver android:name="frameluma.runtime.Recovery$Control" android:exported="true" android:permission="android.permission.DUMP" />
+        <receiver android:name="frameluma.runtime.OwnReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.USER_UNLOCKED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+                <action android:name="${applicationId}.USB_ACCESS_RESULT" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

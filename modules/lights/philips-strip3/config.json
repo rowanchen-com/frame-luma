@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "api_version": 9,
+  "id": "philips-strip3",
+  "kind": "light",
+  "entry_class": "frameluma.devices.philips.strip3.Adapter",
+  "display_name": {
+    "zh": "米家追光氛围灯带",
+    "en": "Mi ambient light strip"
+  },
+  "detection": {
+    "model": "philips.light.strip3"
+  },
+  "capabilities": {
+    "protocol": "set_rgb_pc",
+    "color_order": "rgb",
+    "supported_lengths_m": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "validated_lengths_m": [
+      2,
+      5
+    ],
+    "physical_unit_cm": 10,
+    "maximum_frame_bytes_exclusive": 120,
+    "maximum_run_units": 15,
+    "minimum_frame_interval_ms": 50,
+    "transition_ms": 70,
+    "black_hold_ms": 120,
+    "dark_threshold": 8,
+    "idle_frame_interval_ms": 500,
+    "frame_ack": false,
+    "length_validation": "2m and 5m have hardware confirmation; 3m and 4m have protocol and offline framing coverage"
+  },
+  "layout_profile": "four_edge9",
+  "transport": {
+    "provider": "usb-serial",
+    "vendor_id": 6790,
+    "product_id": 29987,
+    "interface": 0,
+    "input_endpoint": 130,
+    "output_endpoint": 2,
+    "baud_rate": 230400,
+    "data_bits": 8,
+    "stop_bits": 1,
+    "parity": "none",
+    "dtr": true,
+    "rts": false,
+    "flow_control": "none",
+    "control_timeout_ms": 1000
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "api_version": 9,
+  "id": "tcl-27c2a-s",
+  "kind": "display",
+  "entry_class": "frameluma.devices.tcl.model27c2as.Adapter",
+  "display_name": {
+    "zh": "TCL C3APRO",
+    "en": "TCL C3APRO"
+  },
+  "detection": {
+    "model_hints": [
+      "C3APRO"
+    ],
+    "brand_hints": [
+      "TCL",
+      "FFALCON"
+    ]
+  },
+  "ui_rendering": {
+    "video_surface": "embedded"
+  },
+  "capabilities": {
+    "capture_mode": "points",
+    "panel_width": 3840,
+    "panel_height": 2160,
+    "root_required": false,
+    "caller": "tcl-ttvs-system-app-host",
+    "inputs": {
+      "DP": "pending",
+      "HDMI1": "pending",
+      "HDMI2": "pending",
+      "internal_android": "pending"
+    },
+    "sampling_strategy": {
+      "edge_depth_percent": 4,
+      "regions_per_update": 3
+    }
+  },
+  "interface": {
+    "host_package": "com.tcl.ttvs",
+    "host_service": "com.tcl.ttvs.businessproxy.core.service.BusinessProxyService",
+    "start_action": "tcl.sys.intent.action.STR_RESUME_COMPLETED",
+    "lease_action": "com.tcl.ttvs.businessproxy.action.KeepAlive",
+    "sdk_jar": "/product/framework/vendor.tcl.factory-V1.0-java.jar",
+    "factory_class": "vendor.tcl.factory.V1_0.IFactory",
+    "instance": "default"
+  }
+}

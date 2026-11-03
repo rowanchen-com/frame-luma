@@ -1,0 +1,192 @@
+name: frame-luma
+run-name: 'frame-luma #${{ github.run_number }}'
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: '替换哪个已发布版本的附件？留空使用 GitHub Latest Release'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frame-luma-release-assets
+  cancel-in-progress: false
+
+jobs:
+  android:
+    name: frame-luma APK
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Restore the existing signing key
+        env:
+          KEY_BASE64: ${{ secrets.FRAME_LUMA_KEYSTORE_BASE64 }}
+          KEY_PASSWORD: ${{ secrets.FRAME_LUMA_KEYSTORE_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$KEY_BASE64" || -z "$KEY_PASSWORD" ]]; then
+            echo 'Configure FRAME_LUMA_KEYSTORE_BASE64 and FRAME_LUMA_KEYSTORE_PASSWORD with the existing release key.' >&2
+            exit 1
+          fi
+          umask 077
+          printf '%s' "$KEY_BASE64" | base64 --decode > "$RUNNER_TEMP/frame-luma-release.jks"
+          echo "FRAME_LUMA_KEYSTORE=$RUNNER_TEMP/frame-luma-release.jks" >> "$GITHUB_ENV"
+
+      - name: Read the shared build targets
+        id: targets
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          import re
+
+          props = dict(line.split("=", 1) for line in Path("gradle.properties").read_text().splitlines() if "=" in line and not line.startswith("#"))
+          values = {"java": props["frameLuma.javaVersion"], "compile_sdk": props["frameLuma.compileSdk"], "build_tools": props["frameLuma.buildTools"]}
+          for key, value in values.items():
+              if not re.fullmatch(r"[0-9]+(?:\.[0-9]+)*", value):
+                  raise SystemExit(f"Invalid build target: {key}")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              for key, value in values.items():
+                  output.write(f"{key}={value}\n")
+          PY
+
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        with:
+          distribution: temurin
+          java-version: ${{ steps.targets.outputs.java }}
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+
+      - name: Install the configured Android SDK
+        env:
+          COMPILE_SDK: ${{ steps.targets.outputs.compile_sdk }}
+          BUILD_TOOLS: ${{ steps.targets.outputs.build_tools }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          bin="$ANDROID_HOME/cmdline-tools/latest/bin"
+          if [[ -x "$bin/android" ]]; then
+            "$bin/android" --sdk="$ANDROID_HOME" sdk install "platforms/android-$COMPILE_SDK.0" "build-tools/$BUILD_TOOLS"
+          else
+            "$bin/sdkmanager" --install "platforms;android-$COMPILE_SDK.0" "build-tools;$BUILD_TOOLS"
+          fi
+
+      - name: Build the signed universal APK
+        env:
+          FRAME_LUMA_KEYSTORE_PASSWORD: ${{ secrets.FRAME_LUMA_KEYSTORE_PASSWORD }}
+        run: bash gradlew :app:exportReleaseApk -x :app:lintVitalRelease --no-daemon --console=plain
+
+      - name: Name the downloadable APK
+        id: apk
+        env:
+          APK_DOWNLOAD_DIR: ${{ runner.temp }}/frame-luma-apk
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import shutil
+
+          info = json.loads(Path(".local/dist/build-info.json").read_text(encoding="utf-8"))
+          version = info["version_name"]
+          if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version):
+              raise SystemExit("Invalid APK version name")
+          if info["apk_mode"] != "universal" or info["signed"] is not True:
+              raise SystemExit("A signed universal APK is required")
+          name = f"frame-luma-{version}.apk"
+          folder = Path(os.environ["APK_DOWNLOAD_DIR"])
+          folder.mkdir(parents=True, exist_ok=True)
+          target = folder / name
+          shutil.copyfile(".local/dist/frame-luma.apk", target)
+          info["apk_file"] = name
+          build_info = folder / "build-info.json"
+          build_info.write_text(json.dumps(info, indent=2) + "\n", encoding="utf-8")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"path={target}\nfilename={name}\n")
+              output.write(f"build_info={build_info}\n")
+          PY
+
+      - name: Upload the APK for direct download
+        id: download
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          path: ${{ steps.apk.outputs.path }}
+          archive: false
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Add the APK download link to this run
+        env:
+          APK_NAME: ${{ steps.apk.outputs.filename }}
+          APK_URL: ${{ steps.download.outputs.artifact-url }}
+        shell: bash
+        run: |
+          printf '### frame-luma\n\n[下载 %s](%s)\n\n直接下载 APK，无需解压。保留 30 天。\n' "$APK_NAME" "$APK_URL" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Resolve the existing published release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_TAG: ${{ github.event.release.tag_name }}
+          REQUEST_TAG: ${{ inputs.release_tag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="$REQUEST_TAG"
+          if [[ "$EVENT_NAME" == release ]]; then tag="$EVENT_TAG"; fi
+          if [[ -n "$tag" ]]; then
+            encoded=$(jq -rn --arg tag "$tag" '$tag|@uri')
+            gh api "repos/$GH_REPO/releases/tags/$encoded" > "$RUNNER_TEMP/release.json"
+          else
+            gh api "repos/$GH_REPO/releases/latest" > "$RUNNER_TEMP/release.json"
+          fi
+          jq -e '.draft == false and .published_at != null and .immutable != true' "$RUNNER_TEMP/release.json" > /dev/null
+          echo "id=$(jq -r .id "$RUNNER_TEMP/release.json")" >> "$GITHUB_OUTPUT"
+          echo "tag=$(jq -r .tag_name "$RUNNER_TEMP/release.json")" >> "$GITHUB_OUTPUT"
+
+      - name: Replace this release's APK and build information
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_ID: ${{ steps.release.outputs.id }}
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          APK_PATH: ${{ steps.apk.outputs.path }}
+          APK_NAME: ${{ steps.apk.outputs.filename }}
+          BUILD_INFO_PATH: ${{ steps.apk.outputs.build_info }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          encoded=$(jq -rn --arg tag "$RELEASE_TAG" '$tag|@uri')
+          gh api "repos/$GH_REPO/releases/tags/$encoded" > "$RUNNER_TEMP/release-current.json"
+          jq -e --argjson id "$RELEASE_ID" '.id == $id and .draft == false and .published_at != null and .immutable != true' "$RUNNER_TEMP/release-current.json" > /dev/null
+          gh release upload --clobber -- "$RELEASE_TAG" "$APK_PATH" "$BUILD_INFO_PATH"
+          # Keep one current FrameLuma APK. Remove only superseded APKs, after the new upload succeeds.
+          jq --arg name "$APK_NAME" -r '.assets[] | select(.name != $name) | select(.name == "frame-luma.apk" or (.name | test("^frame-luma-[0-9]+([.][0-9]+){2}[.]apk$|^frame-luma-v[0-9][0-9A-Za-z.+_-]*-universal[.]apk$"))) | .id' "$RUNNER_TEMP/release-current.json" |
+          while IFS= read -r asset_id; do
+            gh api --method DELETE "repos/$GH_REPO/releases/assets/$asset_id"
+          done
+          printf 'Built commit `%s` and updated release `%s`.\n' "$GITHUB_SHA" "$RELEASE_TAG" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Remove the runner's signing key
+        if: always()
+        shell: bash
+        run: rm -f -- "$RUNNER_TEMP/frame-luma-release.jks"

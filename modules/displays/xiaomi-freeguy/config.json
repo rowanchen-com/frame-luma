@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "api_version": 9,
+  "id": "xiaomi-freeguy",
+  "kind": "display",
+  "entry_class": "frameluma.devices.xiaomi.freeguy.Adapter",
+  "display_name": {
+    "zh": "小米 MiTV-MFTR0",
+    "en": "Xiaomi MiTV-MFTR0"
+  },
+  "detection": {
+    "model_hints": [
+      "MiTV-MFTR0"
+    ],
+    "brand_hints": [
+      "Xiaomi",
+      "Redmi"
+    ]
+  },
+  "capabilities": {
+    "capture_mode": "points",
+    "panel_width": 3840,
+    "panel_height": 2160,
+    "root_required": false,
+    "caller": "application",
+    "inputs": {
+      "internal_android": "pending",
+      "HDMI1": "pending",
+      "HDMI2": "pending",
+      "HDMI3": "pending"
+    },
+    "sampling_strategy": {
+      "edge_depth_percent": 4,
+      "regions_per_update": 9
+    }
+  },
+  "ui_rendering": {
+    "video_surface": "external"
+  },
+  "recovery": {
+    "enabled": true,
+    "notification": true,
+    "sync": true,
+    "foreground": true,
+    "keys": false,
+    "force_stop": false,
+    "remote_keys": {"85": "toggle", "126": "on", "127": "off"}
+  },
+  "interface": {
+    "background_mode": "accessibility",
+    "service": "TvService",
+    "descriptor": "mitv.internal.ITvService",
+    "transactions": {
+      "colors": 87,
+      "resolution": 88,
+      "supported": 89
+    }
+  }
+}

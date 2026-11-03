@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="follow_channel">随影</string>
+    <string name="follow_title">FrameLuma · 映光</string>
+    <string name="follow_text">画面随影运行中</string>
+    <string name="foreground_unavailable">系统未允许后台设备服务，请重新打开应用</string>
+    <string name="background_service_label">FrameLuma 后台随影</string>
+    <string name="background_service_description">保持已开启的灯光同步。关闭随影后停止取色和输出；不读取界面文字、不拦截按键、不接管桌面。</string>
+    <string name="background_service_required">请在系统无障碍设置中开启“FrameLuma 后台随影”</string>
+    <string name="recovery_listener_label">FrameLuma 后台恢复</string>
+</resources>

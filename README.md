@@ -1,54 +1,77 @@
-# FrameLuma · 映光
+<p align="center">
+  <img src="docs/images/brand-header.svg" alt="FrameLuma · 映光" width="960" />
+</p>
 
-面向Android电视与智能显示器的模块化随影灯光项目。机型专属取色适配与灯带／控制盒适配独立组合，发布为一个APK。
+---
 
-**当前是源码重构的alpha版本。** 首期模块为TCL 27C2A-S（M01/G10、V064、Project32）和米家`philips.light.strip3`的2米灯带。已同签名覆盖安装并在线加载，DP正常画面随影得到现场确认。流畅档九区分批输出，实测软件输出更新间隔约90ms；完整九区轮换仍约270ms。四源色块对照、物理贴装与HDR验证仍待完成，其它品牌和长度尚未声明支持。
+**简体中文** · [English](README.en.md)
 
-![FrameLuma主界面](docs/images/dashboard-1080p.png)
+让画面延伸到屏幕之外。适用于 Android 电视和智能显示器的随影灯光应用，显示平台、灯光控制盒与贴装布局独立适配，一个 APK 同时支持 ARM32／ARM64。
 
-主界面居中一屏：左侧操作、右侧细九区预览、底部连接信息与同步间隔；速度为低／中／快。柔光背景缓慢顺时针流动，App内随影读取自身实际绘制画面，退出后自动恢复设备画面来源。
+![中文界面与幻彩场景](docs/images/setup-ambient-zh.png)
+
+*基于用户实景优化的幻彩效果展示，采用中文界面。*
+
+## 界面
+
+![主界面](docs/images/dashboard-zh.png)
+
+![布局校准](docs/images/calibration-zh.png)
+
+![关于](docs/images/about-zh.png)
+
+## 使用
+
+安装 [Release](https://github.com/rowanchen-com/frame-luma/releases) 中的 APK，连接 USB 灯光控制盒，允许 USB 访问，然后开启“画面随影”。显示接口和控制盒自动识别；布局校准用于调整真实贴装位置。
+
+- Android 9 起可安装；取色由显示适配调用设备提供的接口。
+- 包名 `com.rowanchen.frameluma`。
+- 亮度、低／中／快响应速度、环绕方向支持在线调整。
+- 灯带长度由控制盒读取；当前使用四边九区布局。
+- 界面使用 Compose for TV、系统字体、中英双语；遥控上下移动，左右直接调值。
+
+## 当前适配
+
+| 显示适配 | 取色接口 | 后台方式 |
+| --- | --- | --- |
+| TCL C3APRO | TTVS宿主与factory像素接口 | 前台服务维持宿主会话 |
+| 小米 MiTV-MFTR0（freeguy） | TvService | 无障碍系统绑定，可选自动恢复 |
+
+自动发现依据设备实际接口，系统型号仅作为选择提示。每个适配目录只保留一份`config.json`和职责源码。
+
+显示适配与灯光模块独立组合。目前接过TCL上的2米和小米上的5米strip3实物；strip3协议覆盖2／3／4／5米，3米与4米仅有离线验证。各信号源、HDR与待机的验证范围见[兼容说明](docs/compatibility.md)。其它设备需要对应的适配实现。
+
+背景使用原创静音循环视频，低内存设备自动使用轻量资源。小米与TCL各自保留独立的机型配置，通用性能分档只管理界面开销；颜色流动周期、灯控速度与预览刷新分别管理。播放失败时回退GPU色场。
 
 ## 构建
 
-环境：JDK17、Android SDK34／Build Tools34.0.0；Gradle Wrapper会按锁定版本初始化。源码使用Kotlin界面、Java核心／机型模块和JSON配置，不依赖原厂APK底座或随包的厂商SO。
+使用 JDK 17 和 Android SDK 37／Build Tools 37.0.0。Gradle Wrapper、AGP和Kotlin版本由仓库配置提供。
 
 ```sh
-python scripts/check_modules.py
-./gradlew test :app:assembleRelease -PunsignedBuild=true
+./gradlew :app:exportReleaseApk -x :app:lintVitalRelease -PunsignedBuild=true
 ```
 
-这是无需私钥的未签名贡献者构建。Windows也可运行`./build.ps1 unsigned`。
+Windows 使用 `gradlew.bat`。未签名包输出到 `.local/dist/frame-luma-unsigned.apk`，可用于确认源码能够编译；安装到设备前需要签名。签名与 Actions 说明见[构建与发布](docs/releases.md)。构建不会连接电视，版本不会自动递增。
 
-已有固定签名的本地开发环境运行：
+## 贡献与反馈
 
-```powershell
-./build.ps1 apk
-python scripts/verify_apk.py
-```
+新设备可以先按[采集指引](docs/contributing.md#先收集设备信息)生成一份只读ADB报告，再提交[设备适配Issue](https://github.com/rowanchen-com/frame-luma/issues/new?template=device.yml)，不必先会反编译。已有实现思路时，再从[贡献指南](docs/contributing.md#选择修改位置)选择对应目录和示例。显示与灯光通过接口连接，新增一种灯带不需要修改电视适配。
 
-签名通过环境变量`FRAME_LUMA_KEYSTORE`、`FRAME_LUMA_KEYSTORE_PASSWORD`或被忽略的`local.properties`配置，alias／公钥指纹以[签名策略](signing/policy.json)为准。缺密钥会停止签名，不生成替代密钥。保留`com.xiaomi.mitv.light`和递增versionCode，支持后续同签名覆盖；构建不连接或修改电视。
+反馈问题时说明系统型号、Android版本、控制盒、信号源和复现步骤；提交PR时写清修改前后的行为以及实际完成的验证。未验证的能力保留说明，不需要为了提交PR测试所有设备。
 
-## 目录与开发
+## 目录与文档
 
-| 目录 | 职责 |
+| 目录 | 内容 |
 | --- | --- |
-| app | Kotlin原生电视界面、轻量Canvas预览 |
-| core | 不依赖Android的采样契约、布局和调度 |
-| device-api | Android设备模块接口 |
-| runtime | 模块选择、前台服务、受控IPC、后台引擎 |
-| devices/displays | 品牌组／芯片厂商／平台／机型独立模块 |
-| devices/lights | 灯光厂商／设备或控制盒型号独立模块 |
-| docs | 架构、扩展规范和验证说明；配图放images |
+| `app/` | Compose 界面、资源和原创图标／背景 |
+| `modules/` | 核心、运行层、设备、灯光、传输与布局 |
+| `docs/` | 架构、兼容范围、贡献、发布和截图 |
+| `gradle/` | Wrapper、签名和公共构建配置 |
 
-新增模块放入`devices/`，提供`module.json`、代码、配置、测试和说明。构建自动发现并生成注册表；新代码需重新构建APK后才能启用。接口和配置有版本号，未知／冲突的机型不会被当成已支持。
+[架构](docs/architecture.md) · [兼容范围](docs/compatibility.md) · [添加适配](docs/contributing.md) · [构建发布](docs/releases.md)
 
-- [架构与资源生命周期](docs/architecture.md)
-- [添加机型或灯光模块](docs/contributing.md)
-- [首次重构验证状态](docs/validation.md)
-- [延迟、速度档与测量方法](docs/performance.md)
-- [主界面适配与背景随影](docs/interface.md)
-- [代码及设计来源](THIRD_PARTY_NOTICES.md)
+致谢：[tv-ambient](https://github.com/Mihaivich/tv-ambient)、[aerial-tv](https://github.com/pengchujin/aerial-tv)、[usb-serial-for-android](https://github.com/mik3y/usb-serial-for-android)。
 
-## 许可
+[Apache-2.0](LICENSE) · [所用组件的必要声明](NOTICE)
 
-原创部分采用[Apache-2.0](LICENSE)。引用／移植内容保留原许可及署名，详见第三方说明。签名私钥、设备账号／标识、固件和提取的厂商文件不属于公开源码内容。
+

@@ -1,0 +1,10 @@
+{
+  "id": "usb-serial",
+  "kind": "transport",
+  "entry_class": "frameluma.transports.usbserial.Adapter",
+  "display_name": {
+    "zh": "CH34x USB 串口",
+    "en": "CH34x USB serial"
+  },
+  "dependencies": [":transports:usb"]
+}

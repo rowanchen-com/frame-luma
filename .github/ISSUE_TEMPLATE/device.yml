@@ -1,0 +1,42 @@
+name: 设备适配 / Device support
+description: 提供新设备线索或反馈取色、灯光与后台问题 / Device information, capture, light or background issues
+title: "[设备] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        不需要先会反编译。先按[贡献指南](https://github.com/rowanchen-com/frame-luma/blob/main/docs/contributing.md#先收集设备信息)生成只读报告，再说明你想适配什么。
+        Start with the read-only collector in the [contribution guide](https://github.com/rowanchen-com/frame-luma/blob/main/docs/contributing.en.md#collect-device-information-first). You do not need to reverse-engineer an APK first.
+  - type: input
+    id: model
+    attributes:
+      label: 系统型号与Android版本 / System model and Android version
+      description: 用系统实际显示的型号，可补充固件版本；不填SN、MAC或IP。Use the system model; firmware information is optional. Exclude serial numbers, MAC and IP addresses.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: 需要适配或修复什么 / Area
+      options:
+        - 电视或显示器取色 / Display capture
+        - 灯带或控制盒 / Light controller
+        - 连接与传输 / Connection or transport
+        - 后台或唤醒恢复 / Background or wake recovery
+        - 界面与遥控 / UI or remote interaction
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: 场景与结果 / Scenario and behavior
+      description: 写明灯光、长度、接线、信号源、复现步骤和预期／实际结果。Include the controller, length, connection, input, reproduction steps and expected/actual behavior. Note unavailable hardware.
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: 只读报告或命令输出 / Read-only report or command output
+      description: 附已检查的报告或必要输出，ADB失败时说明步骤。Attach a reviewed report or relevant output; describe connection failures. Exclude firmware, vendor APKs and full system logs.
+    validations:
+      required: false

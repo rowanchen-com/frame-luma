@@ -1,0 +1,50 @@
+{
+  "profiles": [
+    {
+      "id": "four_edge9",
+      "entry_class": "frameluma.layouts.FourEdgeNine",
+      "default": true,
+      "description": "四边环绕，正面视角，底部中央起先向左",
+      "name": {
+        "zh": "四边环绕 · 九区",
+        "en": "Four edges · 9 zones"
+      },
+      "hint": {
+        "zh": "底部中央起，沿左侧、顶部、右侧绕回。",
+        "en": "Start at bottom center, around the left, top and right edges."
+      },
+      "left": {
+        "zh": "底部中央 → 左",
+        "en": "Bottom center → left"
+      },
+      "right": {
+        "zh": "底部中央 → 右",
+        "en": "Bottom center → right"
+      },
+      "labels": {
+        "zh": [
+          "左下底边",
+          "左侧下半",
+          "左侧上半",
+          "顶边左段",
+          "顶边中段",
+          "顶边右段",
+          "右侧上半",
+          "右侧下半",
+          "右下底边"
+        ],
+        "en": [
+          "Bottom left",
+          "Left lower",
+          "Left upper",
+          "Top left",
+          "Top center",
+          "Top right",
+          "Right upper",
+          "Right lower",
+          "Bottom right"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <queries><package android:name="com.tcl.ttvs" /></queries>
+    <uses-permission android:name="com.tcl.ttvs.businessproxy.access" />
+    <application>
+        <service android:name="frameluma.devices.tcl.model27c2as.HostService" android:exported="true" android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="com.tcl.ttvs.action.client.BUSINESS_PROXY" />
+                <action android:name="com.tcl.ttvs.action.client.BUSINESS_PROXY_STR" />
+            </intent-filter>
+            <meta-data android:name="proxy_clazz_name" android:value="frameluma.devices.tcl.model27c2as.HostService$Entry" />
+            <meta-data android:name="proxy_priority" android:value="0" />
+        </service>
+    </application>
+</manifest>

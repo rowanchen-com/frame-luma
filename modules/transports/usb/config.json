@@ -1,0 +1,9 @@
+{
+  "id": "usb-bulk",
+  "kind": "transport",
+  "entry_class": "frameluma.transports.usb.Adapter",
+  "display_name": {
+    "zh": "USB 直接收发",
+    "en": "USB bulk transfer"
+  }
+}

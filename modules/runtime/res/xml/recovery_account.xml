@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:accountType="@string/recovery_account_type"
+    android:label="@string/follow_title"
+    android:icon="@android:drawable/ic_menu_manage"
+    android:smallIcon="@android:drawable/ic_menu_manage" />
